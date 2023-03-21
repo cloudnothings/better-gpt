@@ -6,7 +6,7 @@ export const ChatFeatureBody = () => {
   return (
     <div className="resize-container relative" >
       <ResizeColumn />
-      <ProductBody />
+      <MainBody />
       <ChatBar />
     </div>
   )
@@ -100,7 +100,33 @@ const RightArrows = () => {
 function classNames(...classes: string[]) {
   return classes.filter(Boolean).join(' ')
 }
-const ProductBody = () => {
+const Logo = () => {
+  return (
+    <div className="flex items-center justify-center space-x-2">
+      {/* random filler pic */}
+      <svg className="h-12 w-12"
+        width="76"
+        height="65"
+        viewBox="0 0 76 65"
+        fill="none" xmlns="http://www.w3.org/2000/svg">
+        <path
+          d="M37.5274 0L75.0548 65H0L37.5274 0Z" fill="#ffffff" />
+      </svg>
+      {/* Logo Text */}
+      <div className="font-semibold text-4xl sm:text-5xl text-black dark:text-white">
+        Better
+        <span className="text-blue-500">
+          GPT
+        </span>
+      </div>
+      {/* Feature Ad */}
+      <span className="bg-gradient-to-r from-green-500 to-cyan-500 px-3 py-1 text-xs font-semibold text-white text-center rounded-xl inline-block ">
+        GPT-4 Supported!
+      </span>
+    </div>
+  )
+}
+const MainBody = () => {
   const styles = ["transition-all z-20 relative max-w-full mx-12", "transition-all z-20 relative max-w-3xl mx-auto ", "transition-all z-20 relative max-w-5xl mx-auto px-12"]
   const [style, setStyle] = useState<string>(styles[0] as string)
   return (
@@ -109,23 +135,7 @@ const ProductBody = () => {
         <div className="p-6 sm:p-10 flex items-center justify-center">
           <div>
             {/* Logo  */}
-            <div className="flex items-center justify-center space-x-2">
-              {/* random filler pic */}
-              <svg className="h-12 w-12"
-                width="76"
-                height="65"
-                viewBox="0 0 76 65"
-                fill="none" xmlns="http://www.w3.org/2000/svg"><path
-                  d="M37.5274 0L75.0548 65H0L37.5274 0Z" fill="#ffffff" /></svg>
-              <div className="font-semibold text-4xl sm:text-5xl text-black dark:text-white ">Better
-                <span className="text-blue-500">
-                  GPT
-                </span>
-              </div>
-              <span className="bg-gradient-to-r from-green-500 to-cyan-500 px-3 py-1 text-xs font-semibold text-white text-center rounded-xl inline-block ">
-                GPT-4 Supported!
-              </span>
-            </div>
+            <Logo />
             {/* Message */}
             <div className="text-center font-light text-base sm:text-xl my-4 sm:my-6 text-black dark:text-white">
               An open source UI for ChatGPT

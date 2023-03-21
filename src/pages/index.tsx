@@ -1,7 +1,7 @@
 import { type NextPage } from "next";
 import Head from "next/head";
 import { useEffect, useState } from "react";
-import ChatFeatureBody from "~/components/ChatWindow/ChatWindow";
+import MainWindow from "~/components/ChatWindow/ChatWindow";
 import ChangeModelModal from "~/components/modals/ChangeModelModal";
 import useStore from "~/store/store";
 
@@ -67,17 +67,15 @@ const Home: NextPage = () => {
         <link rel="icon" href="/favicon.ico" />
       </Head>
       {/* Modals */}
-
       <ChangeModelModal />
       <div className="min-h-screen bg-white text-black dark:bg-zinc-800 dark:text-white transition-colors">
-
         {/* big scween */}
         <Sidebar />
         {/* small screen */}
         <div className="flex flex-1 flex-col lg:pl-80">
           <main className="relative">
             <TopBar />
-            <ChatFeatureBody />
+            <MainWindow />
           </main>
         </div>
       </div>
@@ -179,7 +177,7 @@ const AccountCorner = () => {
   return (
     <div className="flex flex-col flex-shrink-0 bg-gray-700 p-3 justify-center space-y-1">
       <LicenseCluster />
-      <div className=" border-t border-gray-500 py-1" />
+      <div className="border-t border-gray-500 py-1" />
       <Copyright />
       <PrivacyPolicy />
       <FeedbackThemeVolume />
