@@ -111,7 +111,12 @@ const ProductBody = () => {
             {/* Logo  */}
             <div className="flex items-center justify-center space-x-2">
               {/* random filler pic */}
-              <img src="https://pbs.twimg.com/profile_images/1362643372746305536/UPgcdZyX_400x400.jpg" alt="Typing Mind" className="rounded-lg w-12 h-12" />
+              <svg className="h-12 w-12"
+                width="76"
+                height="65"
+                viewBox="0 0 76 65"
+                fill="none" xmlns="http://www.w3.org/2000/svg"><path
+                  d="M37.5274 0L75.0548 65H0L37.5274 0Z" fill="#ffffff" /></svg>
               <div className="font-semibold text-4xl sm:text-5xl text-black dark:text-white ">Better
                 <span className="text-blue-500">
                   GPT

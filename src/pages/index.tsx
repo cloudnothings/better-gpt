@@ -63,7 +63,7 @@ const Home: NextPage = () => {
     <>
       <Head>
         <title>Better-GPT</title>
-        <meta name="description" content="Better Interface for GPT-4" />
+        <meta name="description" content="Open Source Interface for GPT-4" />
         <link rel="icon" href="/favicon.ico" />
       </Head>
       {/* Modals */}
@@ -166,8 +166,8 @@ const LicenseCluster = () => {
             </button>
           </div>
           {/* OpenAI Status Button */}
-          <button className="jsx-7078ffb922cb3c38 flex items-center justify-center absolute left-full ml-2">
-            <div className="jsx-7078ffb922cb3c38 h-3 w-3 rounded-full bg-green-500">
+          <button className="flex items-center justify-center absolute left-full ml-2">
+            <div className="h-3 w-3 rounded-full bg-green-500">
             </div>
           </button>
         </div>
@@ -219,7 +219,7 @@ const PrivacyPolicy = () => {
         FAQs
       </a>
       |
-      <a rel="noopener noreferrer" href="https://tdinh.notion.site/tdinh/Typing-Mind-Changelog-b23c1d7de373417bbad50247f7a1a7cb" target="_blank" className="hover:underline">
+      <a rel="noopener noreferrer" href="https://openai.com" target="_blank" className="hover:underline">
         Changelog
       </a>
     </div>
@@ -229,7 +229,7 @@ const Copyright = () => {
   const website = "better-chat.vercel.app"
   return (
     <div className="text-xs text-gray-400 font-semibold text-center">
-      <a href="https://typingmind.com" className="px-1">
+      <a href="https://openai.com" className="px-1">
         {website}
       </a>
       ©
