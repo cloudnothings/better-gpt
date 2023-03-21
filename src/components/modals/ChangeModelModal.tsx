@@ -158,7 +158,7 @@ const ChangeModelModal = () => {
                           </div>
                         </div>
                       </label>
-                      <div className="text-center space-x-2">
+                      <div className="my-2 text-center space-x-2 flex items-center justify-center">
                         <button className="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 disabled:bg-gray-400 disabled:cursor-default transition-colors whitespace-nowrap space-x-1">
                           <CheckIcon className="h-4 w-4" aria-hidden="true" />
                           <span>Apply</span>

@@ -1,5 +1,5 @@
 import { useState } from "react"
-import { BookOpenIcon, Cog6ToothIcon, CogIcon, DocumentIcon, UserIcon } from "@heroicons/react/24/solid"
+import { BookOpenIcon, Cog6ToothIcon, CogIcon, DocumentIcon, KeyIcon, UserIcon } from "@heroicons/react/24/solid"
 import useStore from "~/store/store"
 
 export const ChatFeatureBody = () => {
@@ -126,6 +126,25 @@ const Logo = () => {
     </div>
   )
 }
+const ProductSplash = () => {
+  const apiKey = useStore(state => state.apiKey)
+  return (
+    <div>
+      {/* Logo  */}
+      <Logo />
+      {/* Message */}
+      <div className="text-center font-light text-base sm:text-xl my-4 sm:my-6 text-black dark:text-white">
+        An open source UI for ChatGPT
+      </div>
+      {/* List of features */}
+      <FeatureList />
+      {/* Premium Features Button */}
+      <PremiumFeaturesButton />
+      {/* API Key Input */}
+      {apiKey === "" && <GetStartedAPIKeyButton />}
+    </div>
+  )
+}
 const MainBody = () => {
   const styles = ["transition-all z-20 relative max-w-full mx-12", "transition-all z-20 relative max-w-3xl mx-auto ", "transition-all z-20 relative max-w-5xl mx-auto px-12"]
   const [style, setStyle] = useState<string>(styles[0] as string)
@@ -133,20 +152,7 @@ const MainBody = () => {
     <div className={classNames(style, 'pb-96')}>
       <div className="py-8">
         <div className="p-6 sm:p-10 flex items-center justify-center">
-          <div>
-            {/* Logo  */}
-            <Logo />
-            {/* Message */}
-            <div className="text-center font-light text-base sm:text-xl my-4 sm:my-6 text-black dark:text-white">
-              An open source UI for ChatGPT
-            </div>
-            {/* List of features */}
-            <FeatureList />
-            {/* Premium Features Button */}
-            <PremiumFeaturesButton />
-            {/* Get Started */}
-            <GetStartedAPIKeyEntry />
-          </div>
+          <ProductSplash />
         </div>
         <FeatureButtonRow />
         <Warnings />
@@ -157,10 +163,16 @@ const MainBody = () => {
   )
 }
 const Warnings = () => {
+  const apiKeyError = useStore(state => state.apiKeyError)
+  if (apiKeyError) {
+    return (
+      <div className="text-red-500 text-center text-sm px-4">
+        Please enter your own OpenAI API key to get started.
+      </div>
+    )
+  }
   return (
-    <div className="text-red-500 text-center text-sm px-4">
-      Please enter your own OpenAI API key to get started.
-    </div>
+    <></>
   )
 }
 const FeatureButton = (props: { featureName: string, icon: React.FunctionComponent<React.SVGProps<SVGSVGElement>>, color: string, onClick: () => void }) => {
@@ -220,7 +232,8 @@ const FeatureButtonRow = () => {
     </div>
   )
 }
-const GetStartedAPIKeyEntry = () => {
+const GetStartedAPIKeyButton = () => {
+  const setApiKeyModal = useStore(state => state.setApiKeyModal)
   return (
     <div className="mt-10 ">
       <div className="text-sm mt-10 text-center space-y-4">
@@ -233,18 +246,18 @@ const GetStartedAPIKeyEntry = () => {
           </div>
         </div>
         <div>
-          <button id="enter-api-key-btn" className="inline-flex items-center justify-center rounded-full px-4 py-3 text-sm shadow-md bg-blue-600 text-white hover:bg-blue-500 transition-all active:bg-blue-600 group font-semibold disabled:bg-gray-400 space-x-2"><svg stroke="currentColor" fill="currentColor" stroke-width="0" viewBox="0 0 512 512" className="w-5 h-5" height="1em" width="1em" xmlns="http://www.w3.org/2000/svg">
-            <path d="M218.1 167.17c0 13 0 25.6 4.1 37.4-43.1 50.6-156.9 184.3-167.5 194.5a20.17 20.17 0 00-6.7 15c0 8.5 5.2 16.7 9.6 21.3 6.6 6.9 34.8 33 40 28 15.4-15 18.5-19 24.8-25.2 9.5-9.3-1-28.3 2.3-36s6.8-9.2 12.5-10.4 15.8 2.9 23.7 3c8.3.1 12.8-3.4 19-9.2 5-4.6 8.6-8.9 8.7-15.6.2-9-12.8-20.9-3.1-30.4s23.7 6.2 34 5 22.8-15.5 24.1-21.6-11.7-21.8-9.7-30.7c.7-3 6.8-10 11.4-11s25 6.9 29.6 5.9c5.6-1.2 12.1-7.1 17.4-10.4 15.5 6.7 29.6 9.4 47.7 9.4 68.5 0 124-53.4 124-119.2S408.5 48 340 48s-121.9 53.37-121.9 119.17zM400 144a32 32 0 11-32-32 32 32 0 0132 32z">
-            </path>
-          </svg>
+          <button className="inline-flex items-center justify-center rounded-full px-4 py-3 text-sm shadow-md bg-blue-600 text-white hover:bg-blue-500 transition-all active:bg-blue-600 group font-semibold disabled:bg-gray-400 space-x-2"
+            onClick={() => setApiKeyModal(true)}
+          >
+            <KeyIcon className="h-5 w-5" />
             <span>
-              Enter API Key
+              {`Enter API Key`}
             </span>
           </button>
         </div>
         <div className="text-center">
           <a className="text-blue-500 text-xs hover:underline" target="_blank" rel="noopener noreferrer" href="https://platform.openai.com/account/api-keys">
-            → Get your API key from Open AI dashboard.
+            {`→ Get your API key from Open AI dashboard.`}
           </a>
         </div>
       </div>

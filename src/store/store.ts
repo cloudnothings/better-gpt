@@ -9,6 +9,9 @@ export interface Model {
   note?: string;
 }
 export const initialValues = {
+  apiKey: "",
+  apiKeyModal: false,
+  apiKeyError: false,
   modelModal: false,
   model: {
     id: "",
@@ -18,6 +21,12 @@ export const initialValues = {
 };
 
 interface Store {
+  apiKey: string;
+  setApiKey: (value: string) => void;
+  apiKeyModal: boolean;
+  setApiKeyModal: (value: boolean) => void;
+  apiKeyError: boolean;
+  setApiKeyError: (value: boolean) => void;
   model: Model;
   setModel: (value: Model) => void;
   models: Model[];
@@ -29,6 +38,9 @@ interface Store {
 
 const useStore = create<Store>((set) => ({
   ...initialValues,
+  setApiKey: (value: string) => set({ apiKey: value }),
+  setApiKeyModal: (value: boolean) => set({ apiKeyModal: value }),
+  setApiKeyError: (value: boolean) => set({ apiKeyError: value }),
   setModel: (value: Model) => set({ model: value }),
   setModels: (value: Model[]) => set({ models: value }),
   setModelModal: (value: boolean) => set({ modelModal: value }),
