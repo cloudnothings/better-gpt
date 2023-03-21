@@ -1,6 +1,7 @@
 import { type NextPage } from "next";
 import Head from "next/head";
 import { useState } from "react";
+import ChatFeatureBody from "~/components/ChatWindow/ChatWindow";
 
 
 const Home: NextPage = () => {
@@ -12,8 +13,9 @@ const Home: NextPage = () => {
         <meta name="description" content="Better Interface for GPT-4" />
         <link rel="icon" href="/favicon.ico" />
       </Head>
-      <div className="h-full bg-white text-black dark:bg-zinc-800 dark:text-white transition-colors">
-
+      <div className="min-h-screen bg-white text-black dark:bg-zinc-800 dark:text-white transition-colors">
+        {/* big scween */}
+        <Sidebar />
         {/* small screen */}
         <div className="flex flex-1 flex-col lg:pl-80">
           <main className="relative">
@@ -25,174 +27,296 @@ const Home: NextPage = () => {
     </>
   );
 };
-const ChatFeatureBody = () => {
+const Navbar = () => {
+  const [search, setSearch] = useState("");
+  const chats = [
+    {
+      title: "Example Chat",
+      message: "This is an example chat",
+      id: 1,
+      selected: true,
+      starred: false
+    },
+    {
+      title: "Another Example",
+      message: "This is another example chat",
+      id: 2,
+      selected: false,
+      starred: true
+    },
+    {
+      title: "Example Chat",
+      message: "This is an example chat",
+      id: 3,
+      selected: false,
+      starred: false
+    }
+  ]
   return (
-    <div className="resize-container relative" >
-      <ResizeColumn />
-      <ProductBody />
+    <div className="flex min-h-0 flex-1 flex-col bg-gray-800">
+      <div className="flex flex-1 flex-col overflow-y-auto pb-4">
+        <div className="flex-1 space-y-2 bg-gray-800 flex flex-col">
+          <div className="px-2 space-y-2 sticky z-30 top-0 bg-gray-800 py-2">
+            <div className="flex items-center justify-center space-x-2">
+              <button className="bg-gray-600 text-white group flex items-center justify-center rounded-md px-2 py-2 text-sm font-medium w-full hover:bg-gray-500 transition-all"><svg stroke="currentColor" fill="currentColor" stroke-width="0" viewBox="0 0 20 20" aria-hidden="true" className="text-gray-300 mr-2 h-6 w-6 flex-shrink-0" height="1em" width="1em" xmlns="http://www.w3.org/2000/svg"><path fill-rule="evenodd" d="M18 10c0 3.866-3.582 7-8 7a8.841 8.841 0 01-4.083-.98L2 17l1.338-3.123C2.493 12.767 2 11.434 2 10c0-3.866 3.582-7 8-7s8 3.134 8 7zM7 9H5v2h2V9zm8 0h-2v2h2V9zM9 9h2v2H9V9z" clip-rule="evenodd"></path></svg>
+                New Chat
+              </button>
+              <button className="bg-gray-600 text-white group flex items-center justify-center rounded-md px-2 py-2 text-sm font-medium hover:bg-gray-500 transition-all w-12 shrink-0"><svg stroke="currentColor" fill="none" stroke-width="2" viewBox="0 0 24 24" aria-hidden="true" className="text-gray-300 h-6 w-6 flex-shrink-0" height="1em" width="1em" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"></path><path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path></svg>
+              </button>
+            </div>
+            <div className="relative flex items-center space-x-2">
+              <div className="relative w-full">
+                <input type="text" placeholder="Search chats..." className="bg-gray-700 text-white px-2 py-1 rounded-md w-full"
+                  value={search}
+                  onChange={(e) => setSearch(e.target.value)}
+                />
+              </div>
+              <button className="text-gray-500 hover:text-white transiton-all flex items-center justify-center w-12 shrink-0"><svg stroke="currentColor" fill="currentColor" stroke-width="0" viewBox="0 0 512 512" className="w-6 h-6" height="1em" width="1em" xmlns="http://www.w3.org/2000/svg"><path d="M464,128H272L208,64H48A48,48,0,0,0,0,112V400a48,48,0,0,0,48,48H464a48,48,0,0,0,48-48V176A48,48,0,0,0,464,128ZM359.5,296a16,16,0,0,1-16,16h-64v64a16,16,0,0,1-16,16h-16a16,16,0,0,1-16-16V312h-64a16,16,0,0,1-16-16V280a16,16,0,0,1,16-16h64V200a16,16,0,0,1,16-16h16a16,16,0,0,1,16,16v64h64a16,16,0,0,1,16,16Z"></path></svg>
+              </button>
+            </div>
+            <StarredChats chats={chats} />
+          </div>
+          <CreateFolderForm />
+          <ExampleChats chats={chats} />
+          {/* Implement Drag n Drop for Chats */}
+        </div>
+      </div>
     </div>
   )
 }
-function classNames(...classes: string[]) {
-  return classes.filter(Boolean).join(' ')
-}
-const ProductBody = () => {
-  const styles = ["transition-all z-20 relative max-w-full mx-12", "transition-all z-20 relative max-w-3xl mx-auto ", "transition-all z-20 relative max-w-5xl mx-auto px-12"]
-  const [style, setStyle] = useState<string>(styles[0] as string)
+const LicenseCluster = () => {
   return (
-    <div className={classNames(style, 'pb-[162px] sm:pb-[158px]')}>
-      <div className="py-8">
-        <div className="p-6 sm:p-10 flex items-center justify-center">
-          <div>
-            {/* Logo  */}
-            <div className="flex items-center justify-center space-x-2">
-              {/* random filler pic */}
-              <img src="https://pbs.twimg.com/profile_images/1362643372746305536/UPgcdZyX_400x400.jpg" alt="Typing Mind" className="rounded-lg w-12 h-12" />
-              <div className="font-semibold text-4xl sm:text-5xl text-black dark:text-white ">Typing
-                <span className="text-blue-500">
-                  Mind
-                </span>
-              </div>
-              <span className="bg-gradient-to-r from-green-500 to-cyan-500 px-3 py-1 text-xs font-semibold text-white text-center rounded-xl inline-block ">
-                GPT-4 Supported!
+    <div className="flex items-center justify-center">
+      <div className="jsx-7078ffb922cb3c38 mb-2 grid grid-cols-2 gap-2">
+        <div className="jsx-7078ffb922cb3c38 text-xs text-white font-semibold flex items-center justify-end">
+          License Key
+        </div>
+        <div>
+          <button className="bg-gray-600 text-white group flex items-center justify-center rounded-md px-2 py-1 text-xs font-medium w-full hover:bg-gray-500 transition-all">
+            <svg stroke="currentColor" fill="currentColor" strokeWidth="0" viewBox="0 0 1024 1024" className="text-yellow-500 mr-2 h-4 w-4 flex-shrink-0" aria-hidden="true" height="1em" width="1em" xmlns="http://www.w3.org/2000/svg"><path d="M955.7 856l-416-720c-6.2-10.7-16.9-16-27.7-16s-21.6 5.3-27.7 16l-416 720C56 877.4 71.4 904 96 904h832c24.6 0 40-26.6 27.7-48zM480 416c0-4.4 3.6-8 8-8h48c4.4 0 8 3.6 8 8v184c0 4.4-3.6 8-8 8h-48c-4.4 0-8-3.6-8-8V416zm32 352a48.01 48.01 0 0 1 0-96 48.01 48.01 0 0 1 0 96z"></path></svg>
+            Unlicensed
+          </button>
+        </div>
+        <div className="jsx-7078ffb922cb3c38 text-xs text-white font-semibold flex items-center justify-end">
+          OpenAI API Key
+        </div>
+        <div className="flex items-center relative">
+          <div className="">
+            <button className="bg-gray-600 text-white group flex items-center justify-center rounded-md px-2 py-1 text-xs font-medium w-full hover:bg-gray-500 transition-all space-x-1"><svg stroke="currentColor" fill="currentColor" stroke-width="0" viewBox="0 0 1024 1024" className="text-yellow-500 h-4 w-4 flex-shrink-0" aria-hidden="true" height="1em" width="1em" xmlns="http://www.w3.org/2000/svg"><path d="M955.7 856l-416-720c-6.2-10.7-16.9-16-27.7-16s-21.6 5.3-27.7 16l-416 720C56 877.4 71.4 904 96 904h832c24.6 0 40-26.6 27.7-48zM480 416c0-4.4 3.6-8 8-8h48c4.4 0 8 3.6 8 8v184c0 4.4-3.6 8-8 8h-48c-4.4 0-8-3.6-8-8V416zm32 352a48.01 48.01 0 0 1 0-96 48.01 48.01 0 0 1 0 96z"></path></svg>
+              <span>
+                Enter API Key
               </span>
+            </button>
+          </div>
+          {/* OpenAI Status Button */}
+          <button className="jsx-7078ffb922cb3c38 flex items-center justify-center absolute left-full ml-2">
+            <div className="jsx-7078ffb922cb3c38 h-3 w-3 rounded-full bg-green-500">
             </div>
-            {/* Message */}
-            <div className="text-center font-light text-base sm:text-xl my-4 sm:my-6 text-black dark:text-white">
-              A better UI for ChatGPT
+          </button>
+        </div>
+      </div>
+    </div>
+  )
+}
+const AccountCorner = () => {
+  return (
+    <div className="flex flex-col flex-shrink-0 bg-gray-700 p-3 justify-center space-y-1">
+      <LicenseCluster />
+      <div className=" border-t border-gray-500 py-1" />
+      <Copyright />
+      <PrivacyPolicy />
+      <FeedbackThemeVolume />
+    </div>
+  )
+}
+const FeedbackThemeVolume = () => {
+  return (
+    <div className="text-center flex items-center justify-center pb-safe">
+      <div>
+        <button type="button" className="bg-gray-600 text-white group flex items-center justify-center rounded-md px-2 py-1 text-xs hover:bg-gray-500 transition-all space-x-2 mr-2">
+          <svg stroke="currentColor" fill="currentColor" stroke-width="0" viewBox="0 0 24 24" className="h-4 w-4" aria-hidden="true" height="1em" width="1em" xmlns="http://www.w3.org/2000/svg"><path fill="none" d="M0 0h24v24H0z"></path><path d="M20 2H4c-1.1 0-1.99.9-1.99 2L2 22l4-4h14c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2zm-7 12h-2v-2h2v2zm0-4h-2V6h2v4z"></path></svg>
+          <span>Send Feedback</span>
+        </button>
+      </div>
+      <button type="button" className="bg-gray-600 text-white group flex items-center justify-center rounded-md px-2 py-1 text-xs hover:bg-gray-500 transition-all space-x-2 mr-2">
+        <svg stroke="currentColor" fill="currentColor" stroke-width="0" viewBox="0 0 20 20" aria-hidden="true" className="h-4 w-4" height="1em" width="1em" xmlns="http://www.w3.org/2000/svg"><path d="M17.293 13.293A8 8 0 016.707 2.707a8.001 8.001 0 1010.586 10.586z"></path></svg>
+      </button>
+      <button type="button" className="bg-gray-600 text-white group flex items-center justify-center rounded-md px-2 py-1 text-xs hover:bg-gray-500 transition-all space-x-2 mr-2">
+        <svg stroke="currentColor" fill="currentColor" stroke-width="0" viewBox="0 0 576 512" className="w-4 h-4" height="1em" width="1em" xmlns="http://www.w3.org/2000/svg"><path d="M215.03 71.05L126.06 160H24c-13.26 0-24 10.74-24 24v144c0 13.25 10.74 24 24 24h102.06l88.97 88.95c15.03 15.03 40.97 4.47 40.97-16.97V88.02c0-21.46-25.96-31.98-40.97-16.97zm233.32-51.08c-11.17-7.33-26.18-4.24-33.51 6.95-7.34 11.17-4.22 26.18 6.95 33.51 66.27 43.49 105.82 116.6 105.82 195.58 0 78.98-39.55 152.09-105.82 195.58-11.17 7.32-14.29 22.34-6.95 33.5 7.04 10.71 21.93 14.56 33.51 6.95C528.27 439.58 576 351.33 576 256S528.27 72.43 448.35 19.97zM480 256c0-63.53-32.06-121.94-85.77-156.24-11.19-7.14-26.03-3.82-33.12 7.46s-3.78 26.21 7.41 33.36C408.27 165.97 432 209.11 432 256s-23.73 90.03-63.48 115.42c-11.19 7.14-14.5 22.07-7.41 33.36 6.51 10.36 21.12 15.14 33.12 7.46C447.94 377.94 480 319.54 480 256zm-141.77-76.87c-11.58-6.33-26.19-2.16-32.61 9.45-6.39 11.61-2.16 26.2 9.45 32.61C327.98 228.28 336 241.63 336 256c0 14.38-8.02 27.72-20.92 34.81-11.61 6.41-15.84 21-9.45 32.61 6.43 11.66 21.05 15.8 32.61 9.45 28.23-15.55 45.77-45 45.77-76.88s-17.54-61.32-45.78-76.86z"></path></svg>
+      </button>
+    </div>
+  )
+}
+const PrivacyPolicy = () => {
+  return (
+    <div className="text-xs text-gray-400 text-center flex gap-1 justify-center">
+      <a href="/privacy" target="_blank" className="hover:underline">
+        Privacy
+      </a>
+      |
+      <a href="/terms" target="_blank" className="hover:underline">
+        Terms
+      </a>
+      |
+      <a href="/faqs" target="_blank" className="hover:underline">
+        FAQs
+      </a>
+      |
+      <a rel="noopener noreferrer" href="https://tdinh.notion.site/tdinh/Typing-Mind-Changelog-b23c1d7de373417bbad50247f7a1a7cb" target="_blank" className="hover:underline">
+        Changelog
+      </a>
+    </div>
+  )
+}
+const Copyright = () => {
+  const website = "better-chat.vercel.app"
+  return (
+    <div className="text-xs text-gray-400 font-semibold text-center">
+      <a href="https://typingmind.com" className="px-1">
+        better-chat.vercel.app
+      </a>
+      ©
+      <span className="px-1">
+        2023
+      </span>
+    </div>
+  )
+}
+const Sidebar = () => {
+  return (
+    <div className="hidden lg:fixed lg:inset-y-0 lg:flex lg:w-80 lg:flex-col z-40">
+      <Navbar />
+      <AccountCorner />
+    </div>
+  )
+}
+const StarredChats = (props: { chats: Chat[] }) => {
+  return (
+    <>
+      <div className="max-h-[200px] overflow-auto">
+        {props.chats.map((chat) => (
+          <StarredChat key={chat.id} id={chat.id} title={chat.title} message={chat.message} selected={chat.selected} starred={chat.starred} />
+        ))}
+      </div>
+      {props.chats.length > 0 && (<hr className="border-gray-700"></hr>)}
+    </ >
+  )
+}
+
+const SidebarChatButton = (props: Chat) => {
+
+  return (
+    <div role="button">
+      <div className="select-none lg:select-auto touch-manipulation">
+        <div className={classNames(props.selected ? "bg-gray-900" : "hover:bg-gray-700 hover:text-white", " text-white group flex items-center text-sm font-medium w-full space-x-2 justify-between overflow-hidden")}>
+          <div className="flex items-center justify-start gap-x-2 min-w-0 w-full px-2 py-2 text-sm group cursor-pointer">
+            <svg stroke="currentColor" fill="currentColor" stroke-width="0" viewBox="0 0 20 20" aria-hidden="true" className="text-gray-300 h-6 w-6 flex-shrink-0 hidden sm:block sm:group-hover:hidden" height="1em" width="1em" xmlns="http://www.w3.org/2000/svg"><path fill-rule="evenodd" d="M18 10c0 3.866-3.582 7-8 7a8.841 8.841 0 01-4.083-.98L2 17l1.338-3.123C2.493 12.767 2 11.434 2 10c0-3.866 3.582-7 8-7s8 3.134 8 7zM7 9H5v2h2V9zm8 0h-2v2h2V9zM9 9h2v2H9V9z" clip-rule="evenodd"></path></svg>
+            <button className="flex-shrink-0  sm:hidden sm:group-hover:block">
+              <svg stroke="currentColor" fill="currentColor" stroke-width="0" viewBox="0 0 1024 1024" className="h-6 w-6" aria-hidden="true" height="1em" width="1em" xmlns="http://www.w3.org/2000/svg"><path d="M908.1 353.1l-253.9-36.9L540.7 86.1c-3.1-6.3-8.2-11.4-14.5-14.5-15.8-7.8-35-1.3-42.9 14.5L369.8 316.2l-253.9 36.9c-7 1-13.4 4.3-18.3 9.3a32.05 32.05 0 0 0 .6 45.3l183.7 179.1-43.4 252.9a31.95 31.95 0 0 0 46.4 33.7L512 754l227.1 119.4c6.2 3.3 13.4 4.4 20.3 3.2 17.4-3 29.1-19.5 26.1-36.9l-43.4-252.9 183.7-179.1c5-4.9 8.3-11.3 9.3-18.3 2.7-17.5-9.5-33.7-27-36.3zM664.8 561.6l36.1 210.3L512 672.7 323.1 772l36.1-210.3-152.8-149L417.6 382 512 190.7 606.4 382l211.2 30.7-152.8 148.9z"></path></svg>
+            </button>
+            <div className="space-y-1 text-left w-full min-w-0">
+              <div className="text-gray-100 truncate w-full">
+                {props.title}
+              </div>
+              <div className="text-xs text-gray-400 font-normal truncate w-full">
+                {props.message}
+              </div>
             </div>
-            {/* List of features */}
-            <FeatureList />
-            {/* Premium Features Button */}
-            <PremiumFeaturesButton />
-            {/* Get Started */}
-            <GetStartedAPIKeyEntry />
+          </div>
+          <div className="pr-2">
+            <div className="flex items-center justify-center space-x-2">
+              <button className="text-gray-500 hover:text-white transiton-all">
+                <svg stroke="currentColor" fill="currentColor" stroke-width="0" viewBox="0 0 1024 1024" className="w-6 h-6 sm:w-4 sm:h-4" height="1em" width="1em" xmlns="http://www.w3.org/2000/svg"><path d="M880 836H144c-17.7 0-32 14.3-32 32v36c0 4.4 3.6 8 8 8h784c4.4 0 8-3.6 8-8v-36c0-17.7-14.3-32-32-32zm-622.3-84c2 0 4-.2 6-.5L431.9 722c2-.4 3.9-1.3 5.3-2.8l423.9-423.9a9.96 9.96 0 0 0 0-14.1L694.9 114.9c-1.9-1.9-4.4-2.9-7.1-2.9s-5.2 1-7.1 2.9L256.8 538.8c-1.5 1.5-2.4 3.3-2.8 5.3l-29.5 168.2a33.5 33.5 0 0 0 9.4 29.8c6.6 6.4 14.9 9.9 23.8 9.9z"></path></svg>
+              </button>
+              <button className="text-gray-500 hover:text-white transiton-all">
+                <svg stroke="currentColor" fill="currentColor" stroke-width="0" viewBox="0 0 1024 1024" className="w-6 h-6 sm:w-4 sm:h-4" height="1em" width="1em" xmlns="http://www.w3.org/2000/svg"><path d="M864 256H736v-80c0-35.3-28.7-64-64-64H352c-35.3 0-64 28.7-64 64v80H160c-17.7 0-32 14.3-32 32v32c0 4.4 3.6 8 8 8h60.4l24.7 523c1.6 34.1 29.8 61 63.9 61h454c34.2 0 62.3-26.8 63.9-61l24.7-523H888c4.4 0 8-3.6 8-8v-32c0-17.7-14.3-32-32-32zm-200 0H360v-72h304v72z"></path></svg>
+              </button>
+            </div>
           </div>
         </div>
-        <FeatureButtonRow />
       </div>
-      <div>
-      </div>
-    </div >
+    </div>
   )
 }
-const FeatureButton = (props: { featureName: string }) => {
-  const purpleButton = "inline-flex items-center justify-center rounded-full px-4 py-2 text-sm shadow-md bg-indigo-600 text-white hover:bg-indigo-500 transition-all active:bg-indigo-600 group space-x-2"
-  const orangeButton = "inline-flex items-center justify-center rounded-full px-4 py-2 text-sm shadow-md bg-orange-600 text-white hover:bg-orange-500 transition-all active:bg-orange-600 group space-x-2"
-  const yellowButton = "inline-flex items-center justify-center rounded-full px-4 py-2 text-sm shadow-md bg-yellow-500 text-white hover:bg-brown-500 transition-all active:bg-brown-600 group space-x-2"
+const ExampleChats = (props: { chats: Chat[] }) => {
+
   return (
-    <button className="inline-flex items-center justify-center rounded-full px-4 py-2 text-sm shadow-md text-white bg-gradient-to-r from-green-500 to-cyan-500 transition-all active:bg-cyan-600 group space-x-2">
-      <svg stroke="currentColor" fill="currentColor" stroke-width="0" viewBox="0 0 1024 1024" className="w-4 h-4" height="1em" width="1em" xmlns="http://www.w3.org/2000/svg"><path d="M859.3 569.7l.2.1c3.1-18.9 4.6-38.2 4.6-57.3 0-17.1-1.3-34.3-3.7-51.1 2.4 16.7 3.6 33.6 3.6 50.5 0 19.4-1.6 38.8-4.7 57.8zM99 398.1c-.5-.4-.9-.8-1.4-1.3.7.7 1.4 1.4 2.2 2.1l65.5 55.9v-.1L99 398.1zm536.6-216h.1l-15.5-83.8c-.2-1-.4-1.9-.7-2.8.1.5.3 1.1.4 1.6l15.7 85zm54 546.5l31.4-25.8 92.8 32.9c17-22.9 31.3-47.5 42.6-73.6l-74.7-63.9 6.6-40.1c2.5-15.1 3.8-30.6 3.8-46.1s-1.3-31-3.8-46.1l-6.5-39.9 74.7-63.9c-11.4-26-25.6-50.7-42.6-73.6l-92.8 32.9-31.4-25.8c-23.9-19.6-50.6-35-79.3-45.8l-38.1-14.3-17.9-97a377.5 377.5 0 0 0-85 0l-17.9 97.2-37.9 14.3c-28.5 10.8-55 26.2-78.7 45.7l-31.4 25.9-93.4-33.2c-17 22.9-31.3 47.5-42.6 73.6l75.5 64.5-6.5 40c-2.5 14.9-3.7 30.2-3.7 45.5 0 15.2 1.3 30.6 3.7 45.5l6.5 40-75.5 64.5c11.4 26 25.6 50.7 42.6 73.6l93.4-33.2 31.4 25.9c23.7 19.5 50.2 34.9 78.7 45.7l37.8 14.5 17.9 97.2c28.2 3.2 56.9 3.2 85 0l17.9-97 38.1-14.3c28.8-10.8 55.4-26.2 79.3-45.8zm-177.1-50.3c-30.5 0-59.2-7.8-84.3-21.5C373.3 627 336 568.9 336 502c0-97.2 78.8-176 176-176 66.9 0 125 37.3 154.8 92.2 13.7 25 21.5 53.7 21.5 84.3 0 97.1-78.7 175.8-175.8 175.8zM207.2 812.8c-5.5 1.9-11.2 2.3-16.6 1.2 5.7 1.2 11.7 1 17.5-1l81.4-29c-.1-.1-.3-.2-.4-.3l-81.9 29.1zm717.6-414.7l-65.5 56c0 .2.1.5.1.7l65.4-55.9c7.1-6.1 11.1-14.9 11.2-24-.3 8.8-4.3 17.3-11.2 23.2z"></path><path d="M935.8 646.6c.5 4.7 0 9.5-1.7 14.1l-.9 2.6a446.02 446.02 0 0 1-79.7 137.9l-1.8 2.1a32 32 0 0 1-35.1 9.5l-81.3-28.9a350 350 0 0 1-99.7 57.6l-15.7 85a32.05 32.05 0 0 1-25.8 25.7l-2.7.5a445.2 445.2 0 0 1-79.2 7.1h.3c26.7 0 53.4-2.4 79.4-7.1l2.7-.5a32.05 32.05 0 0 0 25.8-25.7l15.7-84.9c36.2-13.6 69.6-32.9 99.6-57.5l81.2 28.9a32 32 0 0 0 35.1-9.5l1.8-2.1c34.8-41.1 61.5-87.4 79.6-137.7l.9-2.6c1.6-4.7 2.1-9.7 1.5-14.5z"></path><path d="M688 502c0-30.3-7.7-58.9-21.2-83.8C637 363.3 578.9 326 512 326c-97.2 0-176 78.8-176 176 0 66.9 37.3 125 92.2 154.8 24.9 13.5 53.4 21.2 83.8 21.2 97.2 0 176-78.8 176-176zm-288 0c0-29.9 11.7-58 32.8-79.2C454 401.6 482.1 390 512 390c29.9 0 58 11.6 79.2 32.8A111.6 111.6 0 0 1 624 502c0 29.9-11.7 58-32.8 79.2A111.6 111.6 0 0 1 512 614c-29.9 0-58-11.7-79.2-32.8A111.6 111.6 0 0 1 400 502z"></path><path d="M594.1 952.2a32.05 32.05 0 0 0 25.8-25.7l15.7-85a350 350 0 0 0 99.7-57.6l81.3 28.9a32 32 0 0 0 35.1-9.5l1.8-2.1c34.8-41.1 61.6-87.5 79.7-137.9l.9-2.6c1.7-4.6 2.2-9.4 1.7-14.1-.9-7.9-4.7-15.4-11-20.9l-65.3-55.9-.2-.1c3.1-19 4.7-38.4 4.7-57.8 0-16.9-1.2-33.9-3.6-50.5-.3-2.2-.7-4.4-1-6.6 0-.2-.1-.5-.1-.7l65.5-56c6.9-5.9 10.9-14.4 11.2-23.2.1-4-.5-8.1-1.9-12l-.9-2.6a443.74 443.74 0 0 0-79.7-137.9l-1.8-2.1a32.12 32.12 0 0 0-35.1-9.5l-81.3 28.9c-30-24.6-63.4-44-99.6-57.6h-.1l-15.7-85c-.1-.5-.2-1.1-.4-1.6a32.08 32.08 0 0 0-25.4-24.1l-2.7-.5c-52.1-9.4-106.9-9.4-159 0l-2.7.5a32.05 32.05 0 0 0-25.8 25.7l-15.8 85.4a351.86 351.86 0 0 0-99 57.4l-81.9-29.1a32 32 0 0 0-35.1 9.5l-1.8 2.1a446.02 446.02 0 0 0-79.7 137.9l-.9 2.6a32.09 32.09 0 0 0 7.9 33.9c.5.4.9.9 1.4 1.3l66.3 56.6v.1c-3.1 18.8-4.6 37.9-4.6 57 0 19.2 1.5 38.4 4.6 57.1L99 625.5a32.03 32.03 0 0 0-9.3 35.2l.9 2.6c18.1 50.4 44.9 96.9 79.7 137.9l1.8 2.1c4.9 5.7 11.4 9.4 18.5 10.7 5.4 1 11.1.7 16.6-1.2l81.9-29.1c.1.1.3.2.4.3 29.7 24.3 62.8 43.6 98.6 57.1l15.8 85.4a32.05 32.05 0 0 0 25.8 25.7l2.7.5c26.1 4.7 52.8 7.1 79.5 7.1h.3c26.6 0 53.3-2.4 79.2-7.1l2.7-.5zm-39.8-66.5a377.5 377.5 0 0 1-85 0l-17.9-97.2-37.8-14.5c-28.5-10.8-55-26.2-78.7-45.7l-31.4-25.9-93.4 33.2c-17-22.9-31.2-47.6-42.6-73.6l75.5-64.5-6.5-40c-2.4-14.9-3.7-30.3-3.7-45.5 0-15.3 1.2-30.6 3.7-45.5l6.5-40-75.5-64.5c11.3-26.1 25.6-50.7 42.6-73.6l93.4 33.2 31.4-25.9c23.7-19.5 50.2-34.9 78.7-45.7l37.9-14.3 17.9-97.2c28.1-3.2 56.8-3.2 85 0l17.9 97 38.1 14.3c28.7 10.8 55.4 26.2 79.3 45.8l31.4 25.8 92.8-32.9c17 22.9 31.2 47.6 42.6 73.6L781.8 426l6.5 39.9c2.5 15.1 3.8 30.6 3.8 46.1s-1.3 31-3.8 46.1l-6.6 40.1 74.7 63.9a370.03 370.03 0 0 1-42.6 73.6L721 702.8l-31.4 25.8c-23.9 19.6-50.5 35-79.3 45.8l-38.1 14.3-17.9 97z"></path></svg>
-      <span>{props.featureName}</span></button>
-  )
-}
-const FeatureButtonRow = () => {
-  const features = ["Model: GPT-3.5", "Select Character", "Prompt Library", "Upload Document"]
-  return (
-    <div className="my-4 text-center flex items-center justify-center flex-wrap gap-2 px-4">
-      {features.map((feature, index) => {
+    <div className="flex-1 pb-4">
+      {props.chats.map((chat) => {
         return (
-          <FeatureButton key={index} featureName={feature} />
+          <SidebarChatButton  {...chat} key={chat.id} />
         )
       })}
     </div>
   )
 }
-const GetStartedAPIKeyEntry = () => {
+const CreateFolderForm = () => {
+  const [editable, setEditable] = useState<boolean>(false)
+  const [deleting, setDeleting] = useState<boolean>(false)
   return (
-    <div className="mt-10 ">
-      <div className="text-sm mt-10 text-center space-y-4">
-        <div>
-          <div>
-            To get started, enter your OpenAI API key below.
-          </div>
-          <div className="text-xs">
-            Your API Key is stored locally on your browser and never sent anywhere else.
+    <div>
+      <div>
+        <div className="focus-within:bg-gray-900 focus-within:text-white text-gray-300 hover:bg-gray-700 hover:text-white group flex items-center text-sm font-medium w-full space-x-2 justify-between overflow-hidden" role="button" aria-disabled="false" aria-roledescription="sortable" aria-describedby="DndDescribedBy-0">
+          <button className="flex items-center justify-start space-x-2 min-w-0 w-full px-2 py-2 text-sm">
+            <svg stroke="currentColor" fill="currentColor" stroke-width="0" viewBox="0 0 20 20" aria-hidden="true" className="text-gray-300 h-6 w-6 flex-shrink-0" height="1em" width="1em" xmlns="http://www.w3.org/2000/svg"><path fill-rule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clip-rule="evenodd"></path></svg>
+            <div className="space-y-1 text-left w-full min-w-0">
+              <textarea className="bg-gray-900 h-5 text-white rounded-sm px-0 py-0 border-0 ring-blue-500 focus:ring-2 ring-2 sm:text-sm font-medium w-full text-base" >
+                New Folder
+              </textarea>
+            </div>
+          </button>
+          <div className="pr-2">
+            <div className="flex items-center justify-center space-x-2">
+              {!editable && <button className="text-gray-500 hover:text-white transiton-all"><svg stroke="currentColor" fill="currentColor" stroke-width="0" viewBox="0 0 512 512" className="w-6 h-6 sm:w-4 sm:h-4" height="1em" width="1em" xmlns="http://www.w3.org/2000/svg"><path d="M173.898 439.404l-166.4-166.4c-9.997-9.997-9.997-26.206 0-36.204l36.203-36.204c9.997-9.998 26.207-9.998 36.204 0L192 312.69 432.095 72.596c9.997-9.997 26.207-9.997 36.204 0l36.203 36.204c9.997 9.997 9.997 26.206 0 36.204l-294.4 294.401c-9.998 9.997-26.207 9.997-36.204-.001z"></path></svg>
+              </button>}
+              {editable && <button className="text-gray-500 hover:text-white transiton-all"><svg stroke="currentColor" fill="currentColor" stroke-width="0" viewBox="0 0 1024 1024" className="w-6 h-6 sm:w-4 sm:h-4" height="1em" width="1em" xmlns="http://www.w3.org/2000/svg"><path d="M880 836H144c-17.7 0-32 14.3-32 32v36c0 4.4 3.6 8 8 8h784c4.4 0 8-3.6 8-8v-36c0-17.7-14.3-32-32-32zm-622.3-84c2 0 4-.2 6-.5L431.9 722c2-.4 3.9-1.3 5.3-2.8l423.9-423.9a9.96 9.96 0 0 0 0-14.1L694.9 114.9c-1.9-1.9-4.4-2.9-7.1-2.9s-5.2 1-7.1 2.9L256.8 538.8c-1.5 1.5-2.4 3.3-2.8 5.3l-29.5 168.2a33.5 33.5 0 0 0 9.4 29.8c6.6 6.4 14.9 9.9 23.8 9.9z"></path></svg></button>}
+              {!deleting && <button className="text-gray-500 hover:text-white transiton-all">
+                <svg stroke="currentColor" fill="currentColor" stroke-width="0" viewBox="0 0 352 512" className="w-6 h-6 sm:w-4 sm:h-4" height="1em" width="1em" xmlns="http://www.w3.org/2000/svg"><path d="M242.72 256l100.07-100.07c12.28-12.28 12.28-32.19 0-44.48l-22.24-22.24c-12.28-12.28-32.19-12.28-44.48 0L176 189.28 75.93 89.21c-12.28-12.28-32.19-12.28-44.48 0L9.21 111.45c-12.28 12.28-12.28 32.19 0 44.48L109.28 256 9.21 356.07c-12.28 12.28-12.28 32.19 0 44.48l22.24 22.24c12.28 12.28 32.2 12.28 44.48 0L176 322.72l100.07 100.07c12.28 12.28 32.2 12.28 44.48 0l22.24-22.24c12.28-12.28 12.28-32.19 0-44.48L242.72 256z"></path></svg>
+              </button>}
+              {deleting && <span className="text-red-500 text-xs hover:underline">Sure?</span>}
+            </div>
           </div>
         </div>
-        <div>
-          <button id="enter-api-key-btn" className="inline-flex items-center justify-center rounded-full px-4 py-3 text-sm shadow-md bg-blue-600 text-white hover:bg-blue-500 transition-all active:bg-blue-600 group font-semibold disabled:bg-gray-400 space-x-2"><svg stroke="currentColor" fill="currentColor" stroke-width="0" viewBox="0 0 512 512" className="w-5 h-5" height="1em" width="1em" xmlns="http://www.w3.org/2000/svg">
-            <path d="M218.1 167.17c0 13 0 25.6 4.1 37.4-43.1 50.6-156.9 184.3-167.5 194.5a20.17 20.17 0 00-6.7 15c0 8.5 5.2 16.7 9.6 21.3 6.6 6.9 34.8 33 40 28 15.4-15 18.5-19 24.8-25.2 9.5-9.3-1-28.3 2.3-36s6.8-9.2 12.5-10.4 15.8 2.9 23.7 3c8.3.1 12.8-3.4 19-9.2 5-4.6 8.6-8.9 8.7-15.6.2-9-12.8-20.9-3.1-30.4s23.7 6.2 34 5 22.8-15.5 24.1-21.6-11.7-21.8-9.7-30.7c.7-3 6.8-10 11.4-11s25 6.9 29.6 5.9c5.6-1.2 12.1-7.1 17.4-10.4 15.5 6.7 29.6 9.4 47.7 9.4 68.5 0 124-53.4 124-119.2S408.5 48 340 48s-121.9 53.37-121.9 119.17zM400 144a32 32 0 11-32-32 32 32 0 0132 32z">
-            </path>
-          </svg>
-            <span>
-              Enter API Key
-            </span>
+      </div>
+    </div>
+  )
+}
+interface Chat {
+  id: number;
+  title: string;
+  message: string;
+  starred: boolean;
+  selected: boolean;
+}
+const StarredChat = (props: Chat) => {
+  return (
+    <div className={classNames(props.selected ? "bg-gray-900 text-white" : "text-gray-300 hover:bg-gray-700 hover:text-white", " group flex items-center text-sm font-medium w-full space-x-2 justify-between overflow-hidden")}>
+      <div className="flex items-center justify-start gap-x-2 min-w-0 w-full px-2 py-2 text-sm group cursor-pointer">
+        <svg stroke="currentColor" fill="currentColor" stroke-width="0" viewBox="0 0 20 20" aria-hidden="true" className="text-gray-300 h-6 w-6 flex-shrink-0 hidden" height="1em" width="1em" xmlns="http://www.w3.org/2000/svg"><path fill-rule="evenodd" d="M18 10c0 3.866-3.582 7-8 7a8.841 8.841 0 01-4.083-.98L2 17l1.338-3.123C2.493 12.767 2 11.434 2 10c0-3.866 3.582-7 8-7s8 3.134 8 7zM7 9H5v2h2V9zm8 0h-2v2h2V9zM9 9h2v2H9V9z" clip-rule="evenodd"></path></svg>
+        <button className="flex-shrink-0">
+          <svg stroke="currentColor" fill="currentColor" stroke-width="0" viewBox="0 0 1024 1024" className="text-yellow-500 h-4 w-4" aria-hidden="true" height="1em" width="1em" xmlns="http://www.w3.org/2000/svg"><path d="M908.1 353.1l-253.9-36.9L540.7 86.1c-3.1-6.3-8.2-11.4-14.5-14.5-15.8-7.8-35-1.3-42.9 14.5L369.8 316.2l-253.9 36.9c-7 1-13.4 4.3-18.3 9.3a32.05 32.05 0 0 0 .6 45.3l183.7 179.1-43.4 252.9a31.95 31.95 0 0 0 46.4 33.7L512 754l227.1 119.4c6.2 3.3 13.4 4.4 20.3 3.2 17.4-3 29.1-19.5 26.1-36.9l-43.4-252.9 183.7-179.1c5-4.9 8.3-11.3 9.3-18.3 2.7-17.5-9.5-33.7-27-36.3z"></path></svg></button>
+        <div className="space-y-1 text-left w-full min-w-0">
+          <div className="text-gray-100 truncate w-full">{props.title}</div>
+        </div>
+      </div><div className="pr-2">
+        <div className="flex items-center justify-center space-x-2">
+          <button className="text-gray-500 hover:text-white transiton-all">
+            <svg stroke="currentColor" fill="currentColor" stroke-width="0" viewBox="0 0 1024 1024" className="w-6 h-6 sm:w-4 sm:h-4" height="1em" width="1em" xmlns="http://www.w3.org/2000/svg"><path d="M880 836H144c-17.7 0-32 14.3-32 32v36c0 4.4 3.6 8 8 8h784c4.4 0 8-3.6 8-8v-36c0-17.7-14.3-32-32-32zm-622.3-84c2 0 4-.2 6-.5L431.9 722c2-.4 3.9-1.3 5.3-2.8l423.9-423.9a9.96 9.96 0 0 0 0-14.1L694.9 114.9c-1.9-1.9-4.4-2.9-7.1-2.9s-5.2 1-7.1 2.9L256.8 538.8c-1.5 1.5-2.4 3.3-2.8 5.3l-29.5 168.2a33.5 33.5 0 0 0 9.4 29.8c6.6 6.4 14.9 9.9 23.8 9.9z"></path></svg></button>
+          <button className="text-gray-500 hover:text-white transiton-all">
+            <svg stroke="currentColor" fill="currentColor" stroke-width="0" viewBox="0 0 1024 1024" className="w-6 h-6 sm:w-4 sm:h-4" height="1em" width="1em" xmlns="http://www.w3.org/2000/svg"><path d="M864 256H736v-80c0-35.3-28.7-64-64-64H352c-35.3 0-64 28.7-64 64v80H160c-17.7 0-32 14.3-32 32v32c0 4.4 3.6 8 8 8h60.4l24.7 523c1.6 34.1 29.8 61 63.9 61h454c34.2 0 62.3-26.8 63.9-61l24.7-523H888c4.4 0 8-3.6 8-8v-32c0-17.7-14.3-32-32-32zm-200 0H360v-72h304v72z"></path></svg>
           </button>
         </div>
-        <div className="text-center">
-          <a className="text-blue-500 text-xs hover:underline" target="_blank" rel="noopener noreferrer" href="https://platform.openai.com/account/api-keys">
-            → Get your API key from Open AI dashboard.
-          </a>
-        </div>
       </div>
     </div>
   )
 }
-const PremiumFeaturesButton = () => {
-  return (
-    <div className="text-center">
-      <button type="button" className="inline-flex items-center justify-center rounded-md border-gray-500 border dark:hover:bg-zinc-700 hover:bg-gray-100 transition-colors focus:outline-none focus:ring-2 focus:ring-inset focus:ring-blue-500 py-2 px-2 space-x-2 text-sm"><svg stroke="currentColor" fill="currentColor" stroke-width="0" viewBox="0 0 1024 1024" className="h-6 w-6 text-red-500" aria-hidden="true" height="1em" width="1em" xmlns="http://www.w3.org/2000/svg">
-        <path d="M160 894c0 17.7 14.3 32 32 32h286V550H160v344zm386 32h286c17.7 0 32-14.3 32-32V550H546v376zm334-616H732.4c13.6-21.4 21.6-46.8 21.6-74 0-76.1-61.9-138-138-138-41.4 0-78.7 18.4-104 47.4-25.3-29-62.6-47.4-104-47.4-76.1 0-138 61.9-138 138 0 27.2 7.9 52.6 21.6 74H144c-17.7 0-32 14.3-32 32v140h366V310h68v172h366V342c0-17.7-14.3-32-32-32zm-402-4h-70c-38.6 0-70-31.4-70-70s31.4-70 70-70 70 31.4 70 70v70zm138 0h-70v-70c0-38.6 31.4-70 70-70s70 31.4 70 70-31.4 70-70 70z">
-        </path>
-      </svg>
-        <span>
-          View Premium Features
-        </span>
-      </button>
-    </div>
-  )
+
+
+function classNames(...classes: string[]) {
+  return classes.filter(Boolean).join(' ')
 }
-const FeatureList = () => {
-  const features = ["GPT-4 Support", "Better UI", "More Features", "Chat History Search", "More to come..."]
-  return (
-    <div className="flex items-center justify-center">
-      <div className="my-4 grid sm:grid-cols-2 gap-y-2 gap-x-6">
-        {features.map((feature, index) => {
-          return (
-            <Feature featureName={feature} key={index} />
-          )
-        })}
-      </div>
-    </div>
-  )
-}
-const Feature = (props: { featureName: string }) => {
-  return (
-    <div className="flex items-center justify-start space-x-1">
-      <svg stroke="currentColor" fill="currentColor" stroke-width="0" viewBox="0 0 1024 1024" className="text-green-500 w-4 h-4" height="1em" width="1em" xmlns="http://www.w3.org/2000/svg">
-        <path d="M512 64C264.6 64 64 264.6 64 512s200.6 448 448 448 448-200.6 448-448S759.4 64 512 64zm193.5 301.7l-210.6 292a31.8 31.8 0 0 1-51.7 0L318.5 484.9c-3.8-5.3 0-12.7 6.5-12.7h46.9c10.2 0 19.9 4.9 25.9 13.3l71.2 98.8 157.2-218c6-8.3 15.6-13.3 25.9-13.3H699c6.5 0 10.3 7.4 6.5 12.7z">
-        </path>
-      </svg>
-      <div className="text-sm">
-        {props.featureName}
-      </div>
-    </div>
-  )
-}
-const ResizeColumn = () => {
-  // Transitions width of chatbar between 3 sizes
-  return (
-    <div className="fixed top-0 right-0 bottom-0 z-10 items-center justify-between w-12 bg-gray-50 dark:bg-zinc-700/20 hover:bg-gray-200 dark:hover:bg-zinc-700 cursor-pointer transition-colors grid-cols-1 grid-rows-5 text-center group active:bg-gray-300 dark:active:bg-zinc-600 hidden xl:flex flex-col">
-      <RightArrows />
-      <RightArrows />
-      <RightArrows />
-      <RightArrows />
-      <RightArrows />
-    </div>
-  )
-}
-const RightArrows = () => {
-  return (
-    <div className="hidden items-center justify-center text-gray-500 group-hover:flex">
-      <svg stroke="currentColor" fill="currentColor" stroke-width="0" viewBox="0 0 20 20" aria-hidden="true" height="1em" width="1em" xmlns="http://www.w3.org/2000/svg">
-        <path fill-rule="evenodd" d="M10.293 15.707a1 1 0 010-1.414L14.586 10l-4.293-4.293a1 1 0 111.414-1.414l5 5a1 1 0 010 1.414l-5 5a1 1 0 01-1.414 0z" clip-rule="evenodd">
-        </path><path fill-rule="evenodd" d="M4.293 15.707a1 1 0 010-1.414L8.586 10 4.293 5.707a1 1 0 011.414-1.414l5 5a1 1 0 010 1.414l-5 5a1 1 0 01-1.414 0z" clip-rule="evenodd">
-        </path>
-      </svg>
-    </div>
-  )
-}
+
+
 const TopBar = () => {
   return (
     <div className="hide-when-print sticky top-0 z-30 bg-white dark:bg-zinc-700 backdrop-blur">
