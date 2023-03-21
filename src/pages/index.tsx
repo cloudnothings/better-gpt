@@ -1,10 +1,63 @@
 import { type NextPage } from "next";
 import Head from "next/head";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import ChatFeatureBody from "~/components/ChatWindow/ChatWindow";
+import ChangeModelModal from "~/components/modals/ChangeModelModal";
+import useStore from "~/store/store";
 
 
 const Home: NextPage = () => {
+  const setModels = useStore((state) => state.setModels);
+  useEffect(() => {
+    setModels([
+      {
+        name: "GPT-3.5-TURBO",
+        id: "gpt-3.5-turbo",
+        description: "Most capable GPT-3.5 model and optimized for chat at 1/10th the cost of text-davinci-003. Will be updated with our latest model iteration.",
+        maxTokens: 4096,
+        trainingData: "Up to Sep 2021",
+      },
+      {
+        name: "GPT-3.5-TURBO-0301",
+        id: "gpt-3.5-turbo-0301",
+        description: "Snapshot of gpt-3.5-turbo from March 1st 2023. Unlike gpt-3.5-turbo, this model will not receive updates, and will only be supported for a three month period ending on June 1st 2023.",
+        maxTokens: 4096,
+        trainingData: "Up to Sep 2021",
+      },
+      {
+        name: "GPT-4 (Limited Beta)",
+        id: "gpt-4",
+        description: "More capable than any GPT-3.5 model, able to do more complex tasks, and optimized for chat. Will be updated with our latest model iteration.",
+        maxTokens: 8192,
+        trainingData: "Up to Sep 2021",
+        note: "you need API Access to GPT-4 to use this model. If you haven't already, join the waitlist here: https://openai.com/waitlist/gpt-4-api"
+      },
+      {
+        name: "GPT-4-0314 (Limited Beta)",
+        id: "gpt-4-0314",
+        description: "Snapshot of gpt-4 from March 14th 2023. Unlike gpt-4, this model will not receive updates, and will only be supported for a three month period ending on June 14th 2023.",
+        maxTokens: 8192,
+        trainingData: "Up to Sep 2021",
+        note: "you need API Access to GPT-4 to use this model. If you haven't already, join the waitlist here: https://openai.com/waitlist/gpt-4-api"
+      },
+      {
+        name: "GPT-4-32K (Limited Beta)",
+        id: "gpt-4-32k",
+        description: "Same capabilities as GPT-4, but with 4x the context length. Will be updated with our latest model iteration.",
+        trainingData: "Up to Sep 2021",
+        maxTokens: 32768,
+        note: "you need API Access to GPT-4 to use this model. If you haven't already, join the waitlist here: https://openai.com/waitlist/gpt-4-api"
+      },
+      {
+        name: "GPT-4-32K-0314 (Limited Beta)",
+        id: "gpt-4-32k-0314",
+        description: "Snapshot of gpt-4-32k from March 14th 2023. Unlike gpt-4-32k, this model will not receive updates, and will only be supported for a three month period ending on June 14th 2023.",
+        trainingData: "Up to Sep 2021",
+        maxTokens: 32768,
+        note: "you need API Access to GPT-4 to use this model. If you haven't already, join the waitlist here: https://openai.com/waitlist/gpt-4-api"
+      }
+    ]);
+  }, [setModels]);
 
   return (
     <>
@@ -13,7 +66,11 @@ const Home: NextPage = () => {
         <meta name="description" content="Better Interface for GPT-4" />
         <link rel="icon" href="/favicon.ico" />
       </Head>
+      {/* Modals */}
+
+      <ChangeModelModal />
       <div className="min-h-screen bg-white text-black dark:bg-zinc-800 dark:text-white transition-colors">
+
         {/* big scween */}
         <Sidebar />
         {/* small screen */}
@@ -87,8 +144,8 @@ const Navbar = () => {
 const LicenseCluster = () => {
   return (
     <div className="flex items-center justify-center">
-      <div className="jsx-7078ffb922cb3c38 mb-2 grid grid-cols-2 gap-2">
-        <div className="jsx-7078ffb922cb3c38 text-xs text-white font-semibold flex items-center justify-end">
+      <div className="mb-2 grid grid-cols-2 gap-2">
+        <div className=" text-xs text-white font-semibold flex items-center justify-end">
           License Key
         </div>
         <div>
@@ -97,7 +154,7 @@ const LicenseCluster = () => {
             Unlicensed
           </button>
         </div>
-        <div className="jsx-7078ffb922cb3c38 text-xs text-white font-semibold flex items-center justify-end">
+        <div className="text-xs text-white font-semibold flex items-center justify-end">
           OpenAI API Key
         </div>
         <div className="flex items-center relative">
@@ -173,7 +230,7 @@ const Copyright = () => {
   return (
     <div className="text-xs text-gray-400 font-semibold text-center">
       <a href="https://typingmind.com" className="px-1">
-        better-chat.vercel.app
+        {website}
       </a>
       ©
       <span className="px-1">
@@ -260,8 +317,8 @@ const CreateFolderForm = () => {
           <button className="flex items-center justify-start space-x-2 min-w-0 w-full px-2 py-2 text-sm">
             <svg stroke="currentColor" fill="currentColor" stroke-width="0" viewBox="0 0 20 20" aria-hidden="true" className="text-gray-300 h-6 w-6 flex-shrink-0" height="1em" width="1em" xmlns="http://www.w3.org/2000/svg"><path fill-rule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clip-rule="evenodd"></path></svg>
             <div className="space-y-1 text-left w-full min-w-0">
-              <textarea className="bg-gray-900 h-5 text-white rounded-sm px-0 py-0 border-0 ring-blue-500 focus:ring-2 ring-2 sm:text-sm font-medium w-full text-base" >
-                New Folder
+              <textarea className="bg-gray-900 h-5 text-white rounded-sm px-0 py-0 border-0 ring-blue-500 focus:ring-2 ring-2 sm:text-sm font-medium w-full text-base" defaultValue={'New Folder'}>
+
               </textarea>
             </div>
           </button>

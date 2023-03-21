@@ -1,5 +1,6 @@
 import { useState } from "react"
 import { BookOpenIcon, Cog6ToothIcon, CogIcon, DocumentIcon, UserIcon } from "@heroicons/react/24/solid"
+import useStore from "~/store/store"
 
 export const ChatFeatureBody = () => {
   return (
@@ -111,9 +112,9 @@ const ProductBody = () => {
             <div className="flex items-center justify-center space-x-2">
               {/* random filler pic */}
               <img src="https://pbs.twimg.com/profile_images/1362643372746305536/UPgcdZyX_400x400.jpg" alt="Typing Mind" className="rounded-lg w-12 h-12" />
-              <div className="font-semibold text-4xl sm:text-5xl text-black dark:text-white ">Typing
+              <div className="font-semibold text-4xl sm:text-5xl text-black dark:text-white ">Better
                 <span className="text-blue-500">
-                  Mind
+                  GPT
                 </span>
               </div>
               <span className="bg-gradient-to-r from-green-500 to-cyan-500 px-3 py-1 text-xs font-semibold text-white text-center rounded-xl inline-block ">
@@ -122,7 +123,7 @@ const ProductBody = () => {
             </div>
             {/* Message */}
             <div className="text-center font-light text-base sm:text-xl my-4 sm:my-6 text-black dark:text-white">
-              A better UI for ChatGPT
+              An open source UI for ChatGPT
             </div>
             {/* List of features */}
             <FeatureList />
@@ -147,43 +148,60 @@ const Warnings = () => {
     </div>
   )
 }
-const FeatureButton = (props: { featureName: string, icon: React.FunctionComponent<React.SVGProps<SVGSVGElement>>, color: string }) => {
+const FeatureButton = (props: { featureName: string, icon: React.FunctionComponent<React.SVGProps<SVGSVGElement>>, color: string, onClick: () => void }) => {
   return (
-    <button className={classNames(props.color, "inline-flex items-center justify-center rounded-full px-4 py-2 text-sm shadow-md text-white transition-all group space-x-2")}>
+    <button className={classNames(props.color, "inline-flex items-center justify-center rounded-full px-4 py-2 text-sm shadow-md text-white transition-all group space-x-2")} onClick={props.onClick}>
       <props.icon className="h-5 w-5" />
       <span>{props.featureName}</span></button>
   )
 }
+const ChangeModelButton = () => {
+  const setModelModal = useStore(state => state.setModelModal)
+  const [model, setModel] = useState<string>("GPT-3.5" as string)
+  // Open modal to change model
+
+  return (
+    <FeatureButton featureName={`Model: ${model}`} icon={Cog6ToothIcon} color="bg-gradient-to-r from-green-500 to-cyan-500 active:bg-cyan-600" onClick={() => setModelModal(true)} />
+  )
+}
+const SelectCharacterButton = () => {
+  const [character, setCharacter] = useState<string>("Aiden" as string)
+  // Open modal to change character
+  const clickHandler = () => {
+    console.log("Clicked")
+  }
+  return (
+    <FeatureButton featureName={`Select Character`} icon={UserIcon} color="bg-indigo-600 active:bg-indigo-600 hover:bg-indigo-500" onClick={clickHandler} />
+  )
+}
+const PromptLibraryButton = () => {
+  const [prompt, setPrompt] = useState<string>("" as string)
+  // Open modal to change prompt
+  const clickHandler = () => {
+    console.log("Clicked")
+  }
+  return (
+    <FeatureButton featureName={`Prompt Library`} icon={BookOpenIcon} color="bg-gradient-to-r from-yellow-500 to-yellow-600 active:bg-yellow-700" onClick={clickHandler} />
+  )
+}
+const UploadButton = () => {
+  const [upload, setUpload] = useState<string>("" as string)
+  // Open modal to change upload
+  const clickHandler = () => {
+    console.log("Clicked")
+  }
+  return (
+    <FeatureButton featureName={`Upload Document`} icon={DocumentIcon} color="bg-gradient-to-r from-red-500 to-red-600 active:bg-red-700" onClick={clickHandler} />
+  )
+}
+
 const FeatureButtonRow = () => {
-  const features = [
-    {
-      name: "Model: GPT-3.5",
-      icon: Cog6ToothIcon,
-      color: "bg-gradient-to-r from-green-500 to-cyan-500 active:bg-cyan-600"
-    },
-    {
-      name: "Select Character",
-      icon: UserIcon,
-      color: "bg-indigo-600 active:bg-indigo-600 hover:bg-indigo-500"
-    }, {
-      name:
-        "Prompt Library",
-      icon: BookOpenIcon,
-      color: "bg-orange-600 active:bg-orange-600 hover:bg-orange-500"
-    },
-    {
-      name: "Upload Document",
-      icon: DocumentIcon,
-      color: "bg-yellow-600 active:bg-yellow-600 hover:bg-yellow-500"
-    }
-  ]
   return (
     <div className="my-4 text-center flex items-center justify-center flex-wrap gap-2 px-4">
-      {features.map((feature, index) => {
-        return (
-          <FeatureButton key={index} featureName={feature.name} icon={feature.icon} color={feature.color} />
-        )
-      })}
+      <ChangeModelButton />
+      <SelectCharacterButton />
+      <PromptLibraryButton />
+      <UploadButton />
     </div>
   )
 }
