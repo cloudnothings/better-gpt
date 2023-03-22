@@ -143,6 +143,7 @@ const Navbar = () => {
   )
 }
 const LicenseCluster = () => {
+  const setApiKeyModal = useStore((state) => state.setApiKeyModal)
   const apiKey = useStore((state) => state.apiKey)
   return (
     <div className="flex items-center justify-center">
@@ -161,7 +162,9 @@ const LicenseCluster = () => {
         </div>
         <div className="flex items-center relative">
           <div className="">
-            <button className="bg-gray-600 text-white group flex items-center justify-center rounded-md px-2 py-1 text-xs font-medium w-full hover:bg-gray-500 transition-all space-x-1">
+            <button className="bg-gray-600 text-white group flex items-center justify-center rounded-md px-2 py-1 text-xs font-medium w-full hover:bg-gray-500 transition-all space-x-1"
+              onClick={() => setApiKeyModal(true)}
+            >
               {apiKey
                 ? (<>
                   <CheckIcon className="h-4 w-4 mr-2 text-green-500" />
