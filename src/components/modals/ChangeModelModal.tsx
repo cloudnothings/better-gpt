@@ -1,21 +1,31 @@
 import { Dialog, Listbox, Transition } from '@headlessui/react'
 import { CheckIcon, ChevronUpDownIcon } from '@heroicons/react/24/solid'
-import { Fragment, useEffect, useState } from 'react'
-import useStore, { Model } from '~/store/store'
+import { Fragment, useState } from 'react'
+import useStore, { type Model } from '~/store/store'
 function classNames(...classes: string[]) {
   return classes.filter(Boolean).join(' ')
 }
 const ChangeModelModal = () => {
+  const model = useStore((state) => state.model)
+  const setModel = useStore((state) => state.setModel)
   const modelModal = useStore((state) => state.modelModal)
   const setModelModal = useStore((state) => state.setModelModal)
   const models = useStore((state) => state.models)
-  useEffect(() => {
-    console.log('modelModal', modelModal)
-  }, [modelModal])
-  const [selectedModel, setSelectedModel] = useState<Model | null>(models[0] || null)
-  useEffect(() => {
-    setSelectedModel(models[0] || null)
-  }, [models])
+  const [selectedModel, setSelectedModel] = useState<Model>(model)
+
+  const initialSystemInstruction = useStore((state) => state.initialSystemInstruction)
+  const setInitialSystemInstruction = useStore((state) => state.setInitialSystemInstruction)
+  const [systemInstruction, setSystemInstruction] = useState<string>(initialSystemInstruction)
+  const confirmationHandler = () => {
+    setModel(selectedModel)
+    setInitialSystemInstruction(systemInstruction)
+    setModelModal(false)
+  }
+  const cancelHandler = () => {
+    setModelModal(false)
+    setSelectedModel(model)
+    setSystemInstruction(initialSystemInstruction)
+  }
   return (
     <Transition.Root show={modelModal} as={Fragment}>
       <Dialog as="div" className="relative z-50" onClose={() => setModelModal(false)}>
@@ -61,7 +71,7 @@ const ChangeModelModal = () => {
                               <Listbox.Label className="block text-sm font-medium leading-6 text-gray-900">Assigned to</Listbox.Label>
                               <div className="relative mt-2">
                                 <Listbox.Button className="mt-2 block w-full rounded-md border-0 py-1.5 pl-3 pr-10 text-gray-900 dark:text-white dark:bg-zinc-700 ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-blue-600 sm:text-sm sm:leading-6">
-                                  <span className="block truncate">{selectedModel?.name}</span>
+                                  <span className="block truncate">{selectedModel.name}</span>
                                   <span className="pointer-events-none absolute inset-y-0 right-0 flex items-center pr-2">
                                     <ChevronUpDownIcon className="h-5 w-5 text-gray-400" aria-hidden="true" />
                                   </span>
@@ -128,9 +138,12 @@ const ChangeModelModal = () => {
                           </a>
                         </div>
                         <textarea className="mt-2 block w-full rounded-md border-0 py-1.5 pl-3 pr-10 text-gray-900 ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-blue-600 sm:text-sm sm:leading-6 dark:bg-zinc-700 dark:text-white"
-                          placeholder="You are ChatGPT, a large language model trained by OpenAI." />
+                          placeholder="You are ChatGPT, a large language model trained by OpenAI."
+                          value={systemInstruction}
+                          onChange={(e) => setSystemInstruction(e.target.value)}
+                        />
                       </div>
-                      <div>
+                      {/* <div>
                         <label className="flex items-center justify-start">
                           <button className="bg-blue-600 relative inline-flex h-6 w-11 flex-shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none focus:ring-2 focus:ring-blue-600 focus:ring-offset-2" id="headlessui-switch-:r5l:" role="switch" type="button" aria-checked="true" data-headlessui-state="checked">
                             <span aria-hidden="true" className="translate-x-5 pointer-events-none inline-block h-5 w-5 transform rounded-full bg-white shadow ring-0 transition duration-200 ease-in-out">
@@ -157,14 +170,16 @@ const ChangeModelModal = () => {
                             {"Cost estimation doesn't work when stream response is enabled."}
                           </div>
                         </div>
-                      </label>
+                      </label> */}
                       <div className="my-2 text-center space-x-2 flex items-center justify-center">
-                        <button className="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 disabled:bg-gray-400 disabled:cursor-default transition-colors whitespace-nowrap space-x-1">
+                        <button className="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 disabled:bg-gray-400 disabled:cursor-default transition-colors whitespace-nowrap space-x-1"
+                          onClick={confirmationHandler}
+                        >
                           <CheckIcon className="h-4 w-4" aria-hidden="true" />
                           <span>Apply</span>
                         </button>
                         <button className="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md text-gray-800 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 disabled:bg-gray-400 disabled:cursor-default transition-colors whitespace-nowrap space-x-1 dark:text-gray-200"
-                          onClick={() => setModelModal(false)}>
+                          onClick={cancelHandler}>
                           Cancel
                         </button>
                       </div>
@@ -175,7 +190,7 @@ const ChangeModelModal = () => {
                   <button
                     type="button"
                     className="inline-flex w-full justify-center rounded-md bg-indigo-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
-                    onClick={() => setModelModal(false)}
+                    onClick={cancelHandler}
                   >
                     Go back to dashboard
                   </button>

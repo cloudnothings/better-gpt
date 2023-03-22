@@ -7,6 +7,25 @@ import {
   publicProcedure,
   protectedProcedure,
 } from "~/server/api/trpc";
+import { type Message } from "~/store/store";
+export type ChatResponse = {
+  id: string;
+  created: number;
+  model: string;
+  choices: [
+    {
+      finish_reason: string;
+      index: number;
+      message: Message;
+    }
+  ];
+  object: string;
+  usage: {
+    completion_tokens: number;
+    prompt_tokens: number;
+    total_tokens: number;
+  };
+};
 
 export const gptRouter = createTRPCRouter({
   post: publicProcedure
@@ -50,6 +69,6 @@ export const gptRouter = createTRPCRouter({
             });
           }
         });
-      return response.data;
+      return response.data as ChatResponse;
     }),
 });

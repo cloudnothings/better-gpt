@@ -35,6 +35,7 @@ const ApiKeyModal = () => {
       model: 'gpt-3.5-turbo',
     }, {
       onSuccess: () => {
+        localStorage.setItem('apiKey', value)
         setApiKey(value)
         closeModalHandler()
       },
@@ -42,7 +43,6 @@ const ApiKeyModal = () => {
         alert(e.message)
       },
     })
-    setApiKey(value)
     closeModalHandler()
   }
 

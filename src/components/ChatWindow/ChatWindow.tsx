@@ -1,6 +1,8 @@
-import { useState } from "react"
-import { BookOpenIcon, Cog6ToothIcon, CogIcon, DocumentIcon, KeyIcon, UserIcon } from "@heroicons/react/24/solid"
+import { useEffect, useState } from "react"
+import { BookOpenIcon, Cog6ToothIcon, DocumentIcon, KeyIcon, LanguageIcon, MicrophoneIcon, UserIcon } from "@heroicons/react/24/solid"
 import useStore from "~/store/store"
+import { api } from "~/utils/api"
+import MessageWindow from "./MessageWindow"
 
 export const ChatFeatureBody = () => {
   return (
@@ -14,24 +16,51 @@ export const ChatFeatureBody = () => {
 const LanguageButton = () => {
   return (
     <button className="shrink-0 text-gray-500 dark:text-zinc-500 transition-colors  p-1.5 rounded-lg relative hover:text-gray-900 dark:hover:text-zinc-200">
-      <svg stroke="currentColor" fill="currentColor" stroke-width="0" viewBox="0 0 24 24" className="w-6 h-6" height="1em" width="1em" xmlns="http://www.w3.org/2000/svg">
-        <path fill="none" d="M0 0h24v24H0z">
-        </path>
-        <circle cx="9" cy="9" r="4">
-        </circle>
-        <path d="M9 15c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4zm7.76-9.64l-1.68 1.69c.84 1.18.84 2.71 0 3.89l1.68 1.69c2.02-2.02 2.02-5.07 0-7.27zM20.07 2l-1.63 1.63c2.77 3.02 2.77 7.56 0 10.74L20.07 16c3.9-3.89 3.91-9.95 0-14z">
-        </path>
-      </svg>
+      <LanguageIcon className="h-6 w-6" />
     </button>
   )
 }
 
 const ChatBar = () => {
+  const width = useStore((state) => state.width)
+  const [style, setStyle] = useState<string>('mx-auto w-full hide-when-print transition-all max-w-3xl')
+  useEffect(() => {
+    switch (width) {
+      case 0:
+        setStyle('mx-auto w-full hide-when-print transition-all max-w-3xl')
+        break
+      case 1:
+        setStyle('mx-auto w-full hide-when-print transition-all max-w-5xl px-12')
+        break
+      case 2:
+        setStyle('mx-auto w-full hide-when-print transition-all max-w-full px-12')
+        break
+    }
+  }, [width])
   const [showMenu, setShowMenu] = useState<boolean>(false)
+
+  const messages = useStore((state) => state.messages)
+  const setMessages = useStore((state) => state.setMessages)
+  const { id: model } = useStore((state) => state.model)
+  const apiKey = useStore((state) => state.apiKey)
+  const { mutate, isLoading } = api.gpt.post.useMutation()
   const [message, setMessage] = useState<string>("")
+  const sendMessage = () => {
+    if (message.length > 0) {
+      mutate({ model, apiKey, messages: [...messages, { content: message, role: "user" }] }, {
+        onSuccess: (data) => {
+          setMessages([...messages, { content: message, role: "user" }, data.choices[0].message])
+          setMessage("")
+        },
+        onError: (e) => {
+          alert(e.message)
+        }
+      })
+    }
+  }
   return (
     <div className="fixed z-30 bottom-0 left-0 right-0 lg:pl-80 ">
-      <div className="mx-auto w-full hide-when-print transition-all max-w-3xl">
+      <div className={style}>
         <div className="transition-all">
           <div className="my-4 text-center w-full flex items-center justify-center flex-wrap gap-2 px-4"></div>
           <div className="px-4 pb-4 pt-0 bg-white dark:bg-zinc-800 transition-colors">
@@ -47,18 +76,29 @@ const ChatBar = () => {
                         placeholder="Your message here..."
                         className="relative block w-full h-10 rounded-md p-2 border-0 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-blue-600 sm:py-1.5 sm:text-sm sm:leading-6 min-h-[36px] max-h-[500px] resize-none dark:bg-zinc-600 dark:text-white dark:ring-gray-500 dark:focus:ring-blue-500"
                         value={message}
+                        disabled={isLoading}
                         onChange={(e) => setMessage(e.target.value)}
-                      >
-                      </textarea>
+                        onKeyDown={(e) => {
+                          if (e.key === 'Enter' && !e.shiftKey) {
+                            e.preventDefault();
+                            // Perform your submit action here, like sending the message
+                            sendMessage()
+                          }
+                        }}
+                      />
                     </div>
                     {message && (
-                      <button type="button" className="inline-flex items-center h-10 px-4 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 disabled:bg-gray-400 disabled:cursor-default transition-colors whitespace-nowrap space-x-1">
+                      <button type="button" className="inline-flex items-center h-10 px-4 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 disabled:bg-gray-400 disabled:cursor-default transition-colors whitespace-nowrap space-x-1"
+                        onClick={sendMessage}
+                        disabled={isLoading}
+                      >
                         → Send
                       </button>
                     )}
                     {!message && (
                       <div className="flex items-center space-x-2 group">
-                        <button className="rounded-full w-10 h-10 bg-gray-300 dark:bg-zinc-700 dark:hover:bg-zinc-600 p-2 flex items-center justify-center transition-all hover:bg-gray-200 space-x-2 shrink-0" ><svg stroke="currentColor" fill="currentColor" stroke-width="0" viewBox="0 0 352 512" className="w-5 h-5" height="1em" width="1em" xmlns="http://www.w3.org/2000/svg"><path d="M176 352c53.02 0 96-42.98 96-96V96c0-53.02-42.98-96-96-96S80 42.98 80 96v160c0 53.02 42.98 96 96 96zm160-160h-16c-8.84 0-16 7.16-16 16v48c0 74.8-64.49 134.82-140.79 127.38C96.71 376.89 48 317.11 48 250.3V208c0-8.84-7.16-16-16-16H16c-8.84 0-16 7.16-16 16v40.16c0 89.64 63.97 169.55 152 181.69V464H96c-8.84 0-16 7.16-16 16v16c0 8.84 7.16 16 16 16h160c8.84 0 16-7.16 16-16v-16c0-8.84-7.16-16-16-16h-56v-33.77C285.71 418.47 352 344.9 352 256v-48c0-8.84-7.16-16-16-16z"></path></svg>
+                        <button className="rounded-full w-10 h-10 bg-gray-300 dark:bg-zinc-700 dark:hover:bg-zinc-600 p-2 flex items-center justify-center transition-all hover:bg-gray-200 space-x-2 shrink-0" >
+                          <MicrophoneIcon className="h-5 w-5 text-gray-500 dark:text-zinc-500" />
                         </button>
                       </div>
                     )}
@@ -74,9 +114,26 @@ const ChatBar = () => {
 }
 
 const ResizeColumn = () => {
+  const width = useStore((state) => state.width)
+  const setWidth = useStore((state) => state.setWidth)
+  const changeWidthHandler = () => {
+    switch (width) {
+      case 0:
+        setWidth(1)
+        break
+      case 1:
+        setWidth(2)
+        break
+      case 2:
+        setWidth(0)
+        break
+    }
+  }
   // Transitions width of chatbar between 3 sizes
   return (
-    <div className="fixed top-0 right-0 bottom-0 z-10 items-center justify-between w-12 bg-gray-50 dark:bg-zinc-700/20 hover:bg-gray-200 dark:hover:bg-zinc-700 cursor-pointer transition-colors grid-cols-1 grid-rows-5 text-center group active:bg-gray-300 dark:active:bg-zinc-600 hidden xl:flex flex-col">
+    <div className="fixed top-0 select-none right-0 bottom-0 z-10 items-center justify-between w-12 bg-gray-50 dark:bg-zinc-700/20 hover:bg-gray-200 dark:hover:bg-zinc-700 cursor-pointer transition-colors grid-cols-1 grid-rows-5 text-center group active:bg-gray-300 dark:active:bg-zinc-600 hidden xl:flex flex-col"
+      onClick={changeWidthHandler}
+    >
       <RightArrows />
       <RightArrows />
       <RightArrows />
@@ -139,21 +196,36 @@ const ProductSplash = () => {
       {/* List of features */}
       <FeatureList />
       {/* Premium Features Button */}
-      <PremiumFeaturesButton />
+      {/* <PremiumFeaturesButton /> */}
       {/* API Key Input */}
       {apiKey === "" && <GetStartedAPIKeyButton />}
     </div>
   )
 }
 const MainBody = () => {
-  const styles = ["transition-all z-20 relative max-w-full mx-12", "transition-all z-20 relative max-w-3xl mx-auto ", "transition-all z-20 relative max-w-5xl mx-auto px-12"]
-  const [style, setStyle] = useState<string>(styles[0] as string)
+  const width = useStore(state => state.width)
+  const [style, setStyle] = useState<string>("transition-all z-20 relative max-w-3xl mx-auto")
+  useEffect(() => {
+    switch (width) {
+      case 0:
+        setStyle("transition-all z-20 relative max-w-3xl mx-auto")
+        break
+      case 1:
+        setStyle("transition-all z-20 relative max-w-5xl mx-auto px-12")
+        break
+      case 2:
+        setStyle("transition-all z-20 relative max-w-full mx-12")
+        break
+    }
+  }, [width])
+
   return (
     <div className={classNames(style, 'pb-96')}>
       <div className="py-8">
         <div className="p-6 sm:p-10 flex items-center justify-center">
           <ProductSplash />
         </div>
+        <MessageWindow />
         <FeatureButtonRow />
         <Warnings />
       </div>
@@ -183,12 +255,13 @@ const FeatureButton = (props: { featureName: string, icon: React.FunctionCompone
   )
 }
 const ChangeModelButton = () => {
+  const model = useStore(state => state.model)
   const setModelModal = useStore(state => state.setModelModal)
-  const [model, setModel] = useState<string>("GPT-3.5" as string)
+
   // Open modal to change model
 
   return (
-    <FeatureButton featureName={`Model: ${model}`} icon={Cog6ToothIcon} color="bg-gradient-to-r from-green-500 to-cyan-500 active:bg-cyan-600" onClick={() => setModelModal(true)} />
+    <FeatureButton featureName={`Model: ${model.name}`} icon={Cog6ToothIcon} color="bg-gradient-to-r from-green-500 to-cyan-500 active:bg-cyan-600" onClick={() => setModelModal(true)} />
   )
 }
 const SelectCharacterButton = () => {
@@ -226,9 +299,9 @@ const FeatureButtonRow = () => {
   return (
     <div className="my-4 text-center flex items-center justify-center flex-wrap gap-2 px-4">
       <ChangeModelButton />
-      <SelectCharacterButton />
+      {/* <SelectCharacterButton />
       <PromptLibraryButton />
-      <UploadButton />
+      <UploadButton /> */}
     </div>
   )
 }
