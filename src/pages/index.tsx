@@ -1,7 +1,8 @@
-import { Bars3Icon, CheckIcon, Cog8ToothIcon, ExclamationTriangleIcon, GiftIcon, PencilSquareIcon, PlusCircleIcon, StarIcon, TrashIcon } from "@heroicons/react/24/solid";
+import { Bars3Icon, ChatBubbleLeftEllipsisIcon, CheckIcon, Cog8ToothIcon, ExclamationTriangleIcon, GiftIcon, PencilSquareIcon, PlusCircleIcon, ShieldExclamationIcon, StarIcon, TrashIcon } from "@heroicons/react/24/solid";
+import { StarIcon as StarIconOutline } from "@heroicons/react/24/outline";
 import { type NextPage } from "next";
 import Head from "next/head";
-import { useEffect, useState } from "react";
+import { MouseEventHandler, useEffect, useState } from "react";
 import MainWindow from "~/components/ChatWindow/ChatWindow";
 import ApiKeyModal from "~/components/modals/ApiKeyModal";
 import ChangeModelModal from "~/components/modals/ChangeModelModal";
@@ -180,16 +181,18 @@ const FeedbackThemeVolume = () => {
     <div className="text-center flex items-center justify-center pb-safe">
       <div>
         <button type="button" className="bg-gray-600 text-white group flex items-center justify-center rounded-md px-2 py-1 text-xs hover:bg-gray-500 transition-all space-x-2 mr-2">
-          <svg stroke="currentColor" fill="currentColor" stroke-width="0" viewBox="0 0 24 24" className="h-4 w-4" aria-hidden="true" height="1em" width="1em" xmlns="http://www.w3.org/2000/svg"><path fill="none" d="M0 0h24v24H0z"></path><path d="M20 2H4c-1.1 0-1.99.9-1.99 2L2 22l4-4h14c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2zm-7 12h-2v-2h2v2zm0-4h-2V6h2v4z"></path></svg>
+
+          <ShieldExclamationIcon className="h-4 w-4" />
           <span>Send Feedback</span>
         </button>
       </div>
-      <button type="button" className="bg-gray-600 text-white group flex items-center justify-center rounded-md px-2 py-1 text-xs hover:bg-gray-500 transition-all space-x-2 mr-2">
+      {/* Dark mode toggle */}
+      {/* <button type="button" className="bg-gray-600 text-white group flex items-center justify-center rounded-md px-2 py-1 text-xs hover:bg-gray-500 transition-all space-x-2 mr-2">
         <svg stroke="currentColor" fill="currentColor" stroke-width="0" viewBox="0 0 20 20" aria-hidden="true" className="h-4 w-4" height="1em" width="1em" xmlns="http://www.w3.org/2000/svg"><path d="M17.293 13.293A8 8 0 016.707 2.707a8.001 8.001 0 1010.586 10.586z"></path></svg>
-      </button>
-      <button type="button" className="bg-gray-600 text-white group flex items-center justify-center rounded-md px-2 py-1 text-xs hover:bg-gray-500 transition-all space-x-2 mr-2">
+      </button> */}
+      {/* <button type="button" className="bg-gray-600 text-white group flex items-center justify-center rounded-md px-2 py-1 text-xs hover:bg-gray-500 transition-all space-x-2 mr-2">
         <svg stroke="currentColor" fill="currentColor" stroke-width="0" viewBox="0 0 576 512" className="w-4 h-4" height="1em" width="1em" xmlns="http://www.w3.org/2000/svg"><path d="M215.03 71.05L126.06 160H24c-13.26 0-24 10.74-24 24v144c0 13.25 10.74 24 24 24h102.06l88.97 88.95c15.03 15.03 40.97 4.47 40.97-16.97V88.02c0-21.46-25.96-31.98-40.97-16.97zm233.32-51.08c-11.17-7.33-26.18-4.24-33.51 6.95-7.34 11.17-4.22 26.18 6.95 33.51 66.27 43.49 105.82 116.6 105.82 195.58 0 78.98-39.55 152.09-105.82 195.58-11.17 7.32-14.29 22.34-6.95 33.5 7.04 10.71 21.93 14.56 33.51 6.95C528.27 439.58 576 351.33 576 256S528.27 72.43 448.35 19.97zM480 256c0-63.53-32.06-121.94-85.77-156.24-11.19-7.14-26.03-3.82-33.12 7.46s-3.78 26.21 7.41 33.36C408.27 165.97 432 209.11 432 256s-23.73 90.03-63.48 115.42c-11.19 7.14-14.5 22.07-7.41 33.36 6.51 10.36 21.12 15.14 33.12 7.46C447.94 377.94 480 319.54 480 256zm-141.77-76.87c-11.58-6.33-26.19-2.16-32.61 9.45-6.39 11.61-2.16 26.2 9.45 32.61C327.98 228.28 336 241.63 336 256c0 14.38-8.02 27.72-20.92 34.81-11.61 6.41-15.84 21-9.45 32.61 6.43 11.66 21.05 15.8 32.61 9.45 28.23-15.55 45.77-45 45.77-76.88s-17.54-61.32-45.78-76.86z"></path></svg>
-      </button>
+      </button> */}
     </div>
   )
 }
@@ -251,16 +254,36 @@ const StarredChats = () => {
   )
 }
 
-const SidebarChatButton = (props: Thread & { selectedId?: string }) => {
+const SidebarChatButton = (props: Thread & { selected: boolean }) => {
+  const profile = useStore((state) => state.profile)
+  const setProfile = useStore((state) => state.setProfile)
+  const setThread = useStore((state) => state.setThread)
+  const starThreadHandler: MouseEventHandler<HTMLButtonElement> = (e) => {
+    e.stopPropagation()
+    setThread({ ...props, starred: !props.starred })
+  }
+  const deleteThread = useStore((state) => state.deleteThread)
+  const [deleting, setDeleting] = useState(false)
+  const deleteHandler: MouseEventHandler<HTMLButtonElement> = (e) => {
+    e.stopPropagation()
+    deleteThread({ ...props })
+    setProfile({ ...profile, threadIds: profile.threadIds.filter(id => id !== props.id) })
+  }
+  const selectHandler = () => {
+    if (props.selected) return
+    setThread({ ...props })
+  }
+
 
   return (
-    <div role="button">
+    <div role="button" onClick={selectHandler}>
       <div className="select-none lg:select-auto touch-manipulation">
-        <div className={classNames(props?.selectedId === props.id ? "bg-gray-900" : "hover:bg-gray-700 hover:text-white", " text-white group flex items-center text-sm font-medium w-full space-x-2 justify-between overflow-hidden")}>
+        <div className={classNames(props?.selected ? "bg-gray-900" : "hover:bg-gray-700 hover:text-white", " text-white group flex items-center text-sm font-medium w-full space-x-2 justify-between overflow-hidden")}>
           <div className="flex items-center justify-start gap-x-2 min-w-0 w-full px-2 py-2 text-sm group cursor-pointer">
-            <svg stroke="currentColor" fill="currentColor" stroke-width="0" viewBox="0 0 20 20" aria-hidden="true" className="text-gray-300 h-6 w-6 flex-shrink-0 hidden sm:block sm:group-hover:hidden" height="1em" width="1em" xmlns="http://www.w3.org/2000/svg"><path fill-rule="evenodd" d="M18 10c0 3.866-3.582 7-8 7a8.841 8.841 0 01-4.083-.98L2 17l1.338-3.123C2.493 12.767 2 11.434 2 10c0-3.866 3.582-7 8-7s8 3.134 8 7zM7 9H5v2h2V9zm8 0h-2v2h2V9zM9 9h2v2H9V9z" clip-rule="evenodd"></path></svg>
-            <button className="flex-shrink-0  sm:hidden sm:group-hover:block">
-              <svg stroke="currentColor" fill="currentColor" stroke-width="0" viewBox="0 0 1024 1024" className="h-6 w-6" aria-hidden="true" height="1em" width="1em" xmlns="http://www.w3.org/2000/svg"><path d="M908.1 353.1l-253.9-36.9L540.7 86.1c-3.1-6.3-8.2-11.4-14.5-14.5-15.8-7.8-35-1.3-42.9 14.5L369.8 316.2l-253.9 36.9c-7 1-13.4 4.3-18.3 9.3a32.05 32.05 0 0 0 .6 45.3l183.7 179.1-43.4 252.9a31.95 31.95 0 0 0 46.4 33.7L512 754l227.1 119.4c6.2 3.3 13.4 4.4 20.3 3.2 17.4-3 29.1-19.5 26.1-36.9l-43.4-252.9 183.7-179.1c5-4.9 8.3-11.3 9.3-18.3 2.7-17.5-9.5-33.7-27-36.3zM664.8 561.6l36.1 210.3L512 672.7 323.1 772l36.1-210.3-152.8-149L417.6 382 512 190.7 606.4 382l211.2 30.7-152.8 148.9z"></path></svg>
+            <ChatBubbleLeftEllipsisIcon className="text-gray-300 h-6 w-6 flex-shrink-0 hidden sm:block sm:group-hover:hidden" />
+            <button className="flex-shrink-0  sm:hidden sm:group-hover:block"
+              onClick={starThreadHandler} >
+              <StarIconOutline className="h-6 w-6" />
             </button>
             <div className="space-y-1 text-left w-full min-w-0">
               <div className="text-gray-100 truncate w-full">
@@ -276,24 +299,36 @@ const SidebarChatButton = (props: Thread & { selectedId?: string }) => {
               <button className="text-gray-500 hover:text-white transiton-all">
                 <PencilSquareIcon className="w-6 h-6 sm:w-4 sm:h-4" />
               </button>
-              <button className="text-gray-500 hover:text-white transiton-all">
-                <TrashIcon className="w-6 h-6 sm:w-4 sm:h-4" />
+              <button className="text-gray-500 hover:text-white transiton-all"
+              >
+                {!deleting &&
+                  <button className="text-gray-500 hover:text-white transiton-all"
+                    onClick={() => setDeleting(true)}>
+                    <TrashIcon className="w-6 h-6 sm:w-4 sm:h-4" />
+                  </button>
+                }
+                {deleting &&
+                  <button className="text-red-500 hover:text-white transiton-all"
+                    onClick={deleteHandler}>
+                    <TrashIcon className="w-6 h-6 sm:w-4 sm:h-4" />
+                  </button>
+                }
               </button>
             </div>
           </div>
         </div>
       </div>
-    </div>
+    </div >
   )
 }
 const ThreadList = () => {
   const threads = useStore((state) => state.threads)
-  const [selectedThread, setSelectedThread] = useState<Thread | null>(null)
+  const selectedThread = useStore((state) => state.thread)
   return (
     <div className="flex-1 pb-4">
       {threads.map((thread) => {
         return (
-          <SidebarChatButton  {...thread} key={thread.id} selectedId={selectedThread?.id} />
+          <SidebarChatButton  {...thread} key={thread.id} selected={selectedThread.id === thread.id} />
         )
       })}
     </div>
@@ -332,10 +367,34 @@ const CreateFolderForm = () => {
 }
 
 const StarredChat = (props: Thread & { selected: boolean }) => {
+  const profile = useStore((state) => state.profile)
+  const setProfile = useStore((state) => state.setProfile)
+  const setThread = useStore((state) => state.setThread)
+  const threads = useStore((state) => state.threads)
+  const setThreads = useStore((state) => state.setThreads)
+  const starThreadHandler: MouseEventHandler<HTMLButtonElement> = (e) => {
+    e.stopPropagation()
+    setThread({ ...props, starred: !props.starred })
+    setThreads(threads.map(thread => thread.id === props.id ? { ...thread, starred: !thread.starred } : thread))
+  }
+  const deleteThread = useStore((state) => state.deleteThread)
+  const [deleting, setDeleting] = useState(false)
+  const deleteHandler: MouseEventHandler<HTMLButtonElement> = (e) => {
+    e.stopPropagation()
+    deleteThread({ ...props })
+    setProfile({ ...profile, threadIds: profile.threadIds.filter(id => id !== props.id) })
+  }
+  const selectHandler = () => {
+    if (props.selected) return
+    setThread({ ...props })
+  }
+
   return (
-    <div className={classNames(props.selected ? "bg-gray-900 text-white" : "text-gray-300 hover:bg-gray-700 hover:text-white", " group flex items-center text-sm font-medium w-full space-x-2 justify-between overflow-hidden")}>
+    <div className={classNames(props.selected ? "bg-gray-900 text-white" : "text-gray-300 hover:bg-gray-700 hover:text-white", " group flex items-center text-sm font-medium w-full space-x-2 justify-between overflow-hidden")}
+      onClick={selectHandler}
+    >
       <div className="flex items-center justify-start gap-x-2 min-w-0 w-full px-2 py-2 text-sm group cursor-pointer">
-        <button className="flex-shrink-0">
+        <button className="flex-shrink-0" onClick={starThreadHandler}>
           <StarIcon className="text-yellow-500 h-4 w-4" />
         </button>
         <div className="space-y-1 text-left w-full min-w-0">
@@ -347,9 +406,18 @@ const StarredChat = (props: Thread & { selected: boolean }) => {
           <button className="text-gray-500 hover:text-white transiton-all">
             <PencilSquareIcon className="w-6 h-6 sm:w-4 sm:h-4" />
           </button>
-          <button className="text-gray-500 hover:text-white transiton-all">
-            <TrashIcon className="w-6 h-6 sm:w-4 sm:h-4" />
-          </button>
+          {!deleting &&
+            <button className="text-gray-500 hover:text-white transiton-all"
+              onClick={() => setDeleting(true)}>
+              <TrashIcon className="w-6 h-6 sm:w-4 sm:h-4" />
+            </button>
+          }
+          {deleting &&
+            <button className="text-red-500 hover:text-white transiton-all"
+              onClick={deleteHandler}>
+              <TrashIcon className="w-6 h-6 sm:w-4 sm:h-4" />
+            </button>
+          }
         </div>
       </div>
     </div>

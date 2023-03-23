@@ -4,18 +4,18 @@ import { Fragment, useState } from 'react'
 
 import useStore from '~/store/store'
 import { api } from '~/utils/api'
+// generate uuid
+export const uuid = () => {
+  let dt = new Date().getTime()
+  const uuid = 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, (c) => {
+    const r = (dt + Math.random() * 16) % 16 | 0
+    dt = Math.floor(dt / 16)
+    return (c === 'x' ? r : (r & 0x3 | 0x8)).toString(16)
+  })
+  return uuid
+}
 
 const ApiKeyModal = () => {
-  // generate uuid
-  const uuid = () => {
-    let dt = new Date().getTime()
-    const uuid = 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, (c) => {
-      const r = (dt + Math.random() * 16) % 16 | 0
-      dt = Math.floor(dt / 16)
-      return (c === 'x' ? r : (r & 0x3 | 0x8)).toString(16)
-    })
-    return uuid
-  }
 
 
   const profile = useStore((state) => state.profile)
