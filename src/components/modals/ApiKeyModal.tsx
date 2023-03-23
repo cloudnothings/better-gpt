@@ -3,6 +3,7 @@ import { CheckIcon, } from '@heroicons/react/24/solid'
 import { Fragment, useState } from 'react'
 
 import useStore from '~/store/store'
+import { Usage } from '~/types/appstate'
 import { api } from '~/utils/api'
 // generate uuid
 export const uuid = () => {
@@ -16,8 +17,6 @@ export const uuid = () => {
 }
 
 const ApiKeyModal = () => {
-
-
   const profile = useStore((state) => state.profile)
   const addProfile = useStore((state) => state.addProfile)
   const setProfile = useStore((state) => state.setProfile)
@@ -50,14 +49,23 @@ const ApiKeyModal = () => {
       model: 'gpt-3.5-turbo',
     }, {
       onSuccess: () => {
-        const id = uuid()
         if (editMode) {
-          setProfile({ ...profile, key: value, id })
+          setProfile({ ...profile, key: value })
+          setSelectedProfile(profile.id)
         }
         else {
-          addProfile({ ...profile, key: value, id })
+          const id = uuid()
+          addProfile({
+            key: value,
+            id,
+            name: 'New Profile',
+            budget: 0,
+            cost: 0,
+            threadIds: [],
+            usage: {} as Usage
+          })
+          setSelectedProfile(id)
         }
-        setSelectedProfile(id)
         closeModalHandler()
       },
       onError: (e) => {
