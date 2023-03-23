@@ -1,21 +1,45 @@
-import { CheckIcon, ExclamationTriangleIcon } from "@heroicons/react/24/solid";
+import { Bars3Icon, CheckIcon, Cog8ToothIcon, ExclamationTriangleIcon, GiftIcon, PencilSquareIcon, PlusCircleIcon, StarIcon, TrashIcon } from "@heroicons/react/24/solid";
 import { type NextPage } from "next";
 import Head from "next/head";
 import { useEffect, useState } from "react";
 import MainWindow from "~/components/ChatWindow/ChatWindow";
 import ApiKeyModal from "~/components/modals/ApiKeyModal";
 import ChangeModelModal from "~/components/modals/ChangeModelModal";
-import useStore from "~/store/store";
-
+import useStore, { getProfile, loadData } from "~/store/store";
 
 const Home: NextPage = () => {
+  const setProfile = useStore((state) => state.setProfile);
+  const setProfiles = useStore((state) => state.setProfiles);
+  const setThreads = useStore((state) => state.setThreads);
+  const selectedProfile = useStore((state) => state.selectedProfile);
+  const setSelectedProfile = useStore((state) => state.setSelectedProfile);
   useEffect(() => {
-    const apiKey = localStorage.getItem("apiKey");
-    if (apiKey) {
-      useStore.setState({ apiKey });
+    const data = loadData();
+    if (!data) {
+      return
     }
-  }, []);
+    if (data.selectedProfile) {
+      setSelectedProfile(data.selectedProfile)
+    }
+    if (data.profile) {
+      setProfile(data.profile)
+    }
+    if (data.profiles) {
+      setProfiles(data.profiles)
+    }
+    if (data.threads) {
+      setThreads(data.threads)
+    }
+  }, [setProfile, setProfiles, setThreads, setSelectedProfile]);
 
+  useEffect(() => {
+    if (selectedProfile) {
+      const profile = getProfile(selectedProfile)
+      if (profile) {
+        useStore.setState({ profile })
+      }
+    }
+  }, [selectedProfile]);
   return (
     <>
       <Head>
@@ -71,10 +95,13 @@ const Navbar = () => {
         <div className="flex-1 space-y-2 bg-gray-800 flex flex-col">
           <div className="px-2 space-y-2 sticky z-30 top-0 bg-gray-800 py-2">
             <div className="flex items-center justify-center space-x-2">
-              <button className="bg-gray-600 text-white group flex items-center justify-center rounded-md px-2 py-2 text-sm font-medium w-full hover:bg-gray-500 transition-all"><svg stroke="currentColor" fill="currentColor" stroke-width="0" viewBox="0 0 20 20" aria-hidden="true" className="text-gray-300 mr-2 h-6 w-6 flex-shrink-0" height="1em" width="1em" xmlns="http://www.w3.org/2000/svg"><path fill-rule="evenodd" d="M18 10c0 3.866-3.582 7-8 7a8.841 8.841 0 01-4.083-.98L2 17l1.338-3.123C2.493 12.767 2 11.434 2 10c0-3.866 3.582-7 8-7s8 3.134 8 7zM7 9H5v2h2V9zm8 0h-2v2h2V9zM9 9h2v2H9V9z" clip-rule="evenodd"></path></svg>
+              <button className="bg-gray-600 text-white group flex items-center justify-center rounded-md px-2 py-2 text-sm font-medium w-full hover:bg-gray-500 transition-all">
+                <PlusCircleIcon className="text-gray-300 mr-2 h-6 w-6 flex-shrink-0" />
                 New Chat
               </button>
-              <button className="bg-gray-600 text-white group flex items-center justify-center rounded-md px-2 py-2 text-sm font-medium hover:bg-gray-500 transition-all w-12 shrink-0"><svg stroke="currentColor" fill="none" stroke-width="2" viewBox="0 0 24 24" aria-hidden="true" className="text-gray-300 h-6 w-6 flex-shrink-0" height="1em" width="1em" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"></path><path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path></svg>
+              <button className="bg-gray-600 text-white group flex items-center justify-center rounded-md px-2 py-2 text-sm font-medium hover:bg-gray-500 transition-all w-12 shrink-0">
+                <Cog8ToothIcon className="text-gray-300 h-6 w-6 flex-shrink-0"
+                />
               </button>
             </div>
             <div className="relative flex items-center space-x-2">
@@ -99,7 +126,7 @@ const Navbar = () => {
 }
 const LicenseCluster = () => {
   const setApiKeyModal = useStore((state) => state.setApiKeyModal)
-  const apiKey = useStore((state) => state.apiKey)
+  const profile = useStore((state) => state.profile)
   return (
     <div className="flex items-center justify-center">
       <div className="mb-2 grid grid-cols-2 gap-2">
@@ -120,12 +147,12 @@ const LicenseCluster = () => {
             <button className="bg-gray-600 text-white group flex items-center justify-center rounded-md px-2 py-1 text-xs font-medium w-full hover:bg-gray-500 transition-all space-x-1"
               onClick={() => setApiKeyModal(true)}
             >
-              {apiKey
+              {profile.key
                 ? (<>
                   <CheckIcon className="h-4 w-4 mr-2 text-green-500" />
                   <span>
                     {/* show (***fdkl) using last 4 characters of the key*/
-                      `(***${apiKey.slice(-4)})`
+                      `${profile.cost}`
                     }
                   </span>
                 </>)
@@ -321,18 +348,20 @@ const StarredChat = (props: Chat) => {
   return (
     <div className={classNames(props.selected ? "bg-gray-900 text-white" : "text-gray-300 hover:bg-gray-700 hover:text-white", " group flex items-center text-sm font-medium w-full space-x-2 justify-between overflow-hidden")}>
       <div className="flex items-center justify-start gap-x-2 min-w-0 w-full px-2 py-2 text-sm group cursor-pointer">
-        <svg stroke="currentColor" fill="currentColor" stroke-width="0" viewBox="0 0 20 20" aria-hidden="true" className="text-gray-300 h-6 w-6 flex-shrink-0 hidden" height="1em" width="1em" xmlns="http://www.w3.org/2000/svg"><path fill-rule="evenodd" d="M18 10c0 3.866-3.582 7-8 7a8.841 8.841 0 01-4.083-.98L2 17l1.338-3.123C2.493 12.767 2 11.434 2 10c0-3.866 3.582-7 8-7s8 3.134 8 7zM7 9H5v2h2V9zm8 0h-2v2h2V9zM9 9h2v2H9V9z" clip-rule="evenodd"></path></svg>
         <button className="flex-shrink-0">
-          <svg stroke="currentColor" fill="currentColor" stroke-width="0" viewBox="0 0 1024 1024" className="text-yellow-500 h-4 w-4" aria-hidden="true" height="1em" width="1em" xmlns="http://www.w3.org/2000/svg"><path d="M908.1 353.1l-253.9-36.9L540.7 86.1c-3.1-6.3-8.2-11.4-14.5-14.5-15.8-7.8-35-1.3-42.9 14.5L369.8 316.2l-253.9 36.9c-7 1-13.4 4.3-18.3 9.3a32.05 32.05 0 0 0 .6 45.3l183.7 179.1-43.4 252.9a31.95 31.95 0 0 0 46.4 33.7L512 754l227.1 119.4c6.2 3.3 13.4 4.4 20.3 3.2 17.4-3 29.1-19.5 26.1-36.9l-43.4-252.9 183.7-179.1c5-4.9 8.3-11.3 9.3-18.3 2.7-17.5-9.5-33.7-27-36.3z"></path></svg></button>
+          <StarIcon className="text-yellow-500 h-4 w-4" />
+        </button>
         <div className="space-y-1 text-left w-full min-w-0">
           <div className="text-gray-100 truncate w-full">{props.title}</div>
         </div>
-      </div><div className="pr-2">
+      </div>
+      <div className="pr-2">
         <div className="flex items-center justify-center space-x-2">
           <button className="text-gray-500 hover:text-white transiton-all">
-            <svg stroke="currentColor" fill="currentColor" stroke-width="0" viewBox="0 0 1024 1024" className="w-6 h-6 sm:w-4 sm:h-4" height="1em" width="1em" xmlns="http://www.w3.org/2000/svg"><path d="M880 836H144c-17.7 0-32 14.3-32 32v36c0 4.4 3.6 8 8 8h784c4.4 0 8-3.6 8-8v-36c0-17.7-14.3-32-32-32zm-622.3-84c2 0 4-.2 6-.5L431.9 722c2-.4 3.9-1.3 5.3-2.8l423.9-423.9a9.96 9.96 0 0 0 0-14.1L694.9 114.9c-1.9-1.9-4.4-2.9-7.1-2.9s-5.2 1-7.1 2.9L256.8 538.8c-1.5 1.5-2.4 3.3-2.8 5.3l-29.5 168.2a33.5 33.5 0 0 0 9.4 29.8c6.6 6.4 14.9 9.9 23.8 9.9z"></path></svg></button>
+            <PencilSquareIcon className="w-6 h-6 sm:w-4 sm:h-4" />
+          </button>
           <button className="text-gray-500 hover:text-white transiton-all">
-            <svg stroke="currentColor" fill="currentColor" stroke-width="0" viewBox="0 0 1024 1024" className="w-6 h-6 sm:w-4 sm:h-4" height="1em" width="1em" xmlns="http://www.w3.org/2000/svg"><path d="M864 256H736v-80c0-35.3-28.7-64-64-64H352c-35.3 0-64 28.7-64 64v80H160c-17.7 0-32 14.3-32 32v32c0 4.4 3.6 8 8 8h60.4l24.7 523c1.6 34.1 29.8 61 63.9 61h454c34.2 0 62.3-26.8 63.9-61l24.7-523H888c4.4 0 8-3.6 8-8v-32c0-17.7-14.3-32-32-32zm-200 0H360v-72h304v72z"></path></svg>
+            <TrashIcon className="w-6 h-6 sm:w-4 sm:h-4" />
           </button>
         </div>
       </div>
@@ -352,14 +381,12 @@ const TopBar = () => {
       <div className="flex lg:hidden absolute left-1 top-0 bottom-0 items-center justify-center">
         <button type="button" className="inline-flex h-12 w-12 items-center justify-center rounded-md text-gray-500 hover:text-gray-900 focus:outline-none focus:ring-2 focus:ring-inset focus:ring-blue-500 dark:hover:text-gray-100">
           <span className="sr-only">Open sidebar</span>
-          <svg className="h-6 w-6" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M4 6h16M4 12h16M4 18h16" />
-          </svg>
+          <Bars3Icon />
         </button>
       </div>
       <div className="absolute right-2 top-0 bottom-0 flex items-center justify-center" >
         <button className="inline-flex items-center justify-center rounded-md text-gray-700 hover:text-gray-900 focus:outline-none focus:ring-2 focus:ring-inset focus:ring-blue-500 py-2 px-2 space-x-2 text-sm">
-          <svg stroke="currentColor" fill="currentColor" stroke-width="0" viewBox="0 0 1024 1024" className="h-6 w-6 text-red-500" aria-hidden="true" height="1em" width="1em" xmlns="http://www.w3.org/2000/svg"><path d="M160 894c0 17.7 14.3 32 32 32h286V550H160v344zm386 32h286c17.7 0 32-14.3 32-32V550H546v376zm334-616H732.4c13.6-21.4 21.6-46.8 21.6-74 0-76.1-61.9-138-138-138-41.4 0-78.7 18.4-104 47.4-25.3-29-62.6-47.4-104-47.4-76.1 0-138 61.9-138 138 0 27.2 7.9 52.6 21.6 74H144c-17.7 0-32 14.3-32 32v140h366V310h68v172h366V342c0-17.7-14.3-32-32-32zm-402-4h-70c-38.6 0-70-31.4-70-70s31.4-70 70-70 70 31.4 70 70v70zm138 0h-70v-70c0-38.6 31.4-70 70-70s70 31.4 70 70-31.4 70-70 70z"></path></svg>
+          <GiftIcon className="h-6 w-6 text-red-500" />
         </button>
       </div>
       <div className="flex items-center justify-center w-full p-2 border-bottom-2 border-gray-200 shadow-bottom flex-col min-w-0">

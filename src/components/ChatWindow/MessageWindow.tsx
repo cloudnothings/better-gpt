@@ -1,6 +1,7 @@
 import { Cog6ToothIcon } from "@heroicons/react/24/solid";
 import Image from "next/image";
-import useStore, { type Message } from "~/store/store";
+import useStore from "~/store/store";
+import type { Message } from "~/types/appstate";
 import { TextWithCode } from "../TextWithCode";
 function classNames(...classes: string[]) {
   return classes.filter(Boolean).join(' ')
@@ -41,10 +42,13 @@ const MessageContainer = ({ content, role }: Message) => {
 };
 
 const MessageWindow = () => {
-  const messages = useStore((state) => state.messages)
+  const thread = useStore((state) => state.thread)
+  if (!thread.messages) {
+    return null;
+  }
   return (
     <>
-      {messages.map((message, index) => {
+      {thread.messages.map((message, index) => {
         return (
           <MessageContainer
             key={index}

@@ -1,14 +1,29 @@
 import { Dialog, Transition } from '@headlessui/react'
 import { CheckIcon, } from '@heroicons/react/24/solid'
 import { Fragment, useState } from 'react'
+
 import useStore from '~/store/store'
 import { api } from '~/utils/api'
 
 const ApiKeyModal = () => {
-  const apiKey = useStore((state) => state.apiKey)
-  const setApiKey = useStore((state) => state.setApiKey)
+  // generate uuid
+  const uuid = () => {
+    let dt = new Date().getTime()
+    const uuid = 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, (c) => {
+      const r = (dt + Math.random() * 16) % 16 | 0
+      dt = Math.floor(dt / 16)
+      return (c === 'x' ? r : (r & 0x3 | 0x8)).toString(16)
+    })
+    return uuid
+  }
+
+
+  const profile = useStore((state) => state.profile)
+  const addProfile = useStore((state) => state.addProfile)
+  const setProfile = useStore((state) => state.setProfile)
   const showModal = useStore((state) => state.apiKeyModal)
   const setShowModal = useStore((state) => state.setApiKeyModal)
+  const setSelectedProfile = useStore((state) => state.setSelectedProfile)
   const [value, setValue] = useState<string>('')
   const [editMode, setEditMode] = useState<boolean>(false)
   const closeModalHandler = () => {
@@ -35,8 +50,14 @@ const ApiKeyModal = () => {
       model: 'gpt-3.5-turbo',
     }, {
       onSuccess: () => {
-        localStorage.setItem('apiKey', value)
-        setApiKey(value)
+        const id = uuid()
+        if (editMode) {
+          setProfile({ ...profile, key: value, id })
+        }
+        else {
+          addProfile({ ...profile, key: value, id })
+        }
+        setSelectedProfile(id)
         closeModalHandler()
       },
       onError: (e) => {
@@ -87,14 +108,14 @@ const ApiKeyModal = () => {
                       </a>
                     </div>
                     <div className='my-4'>
-                      {apiKey && !editMode && (
+                      {profile.key && !editMode && (
                         <div className='w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm dark:bg-zinc-700 text-right flex items-center justify-end gap-4'>
-                          <span>{`*************************${apiKey.slice(-4)}`}
+                          <span>{`*************************${profile.key.slice(-4)}`}
                           </span>
                           <button className='text-blue-500 hover:underline' onClick={editModeHandler}>Change</button>
                         </div>
                       )}
-                      {apiKey && editMode && (
+                      {profile.key && editMode && (
                         <input className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm dark:bg-zinc-700"
                           type="text"
                           placeholder="sk-xxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"
@@ -107,7 +128,7 @@ const ApiKeyModal = () => {
                       <div>
                         <div className="flex items-center justify-between">
                         </div>
-                        {!apiKey && (
+                        {!profile.key && (
                           <input className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm dark:bg-zinc-700"
                             type="text"
                             placeholder="sk-xxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"

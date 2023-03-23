@@ -3,6 +3,7 @@ import { BookOpenIcon, Cog6ToothIcon, DocumentIcon, KeyIcon, LanguageIcon, Micro
 import useStore from "~/store/store"
 import { api } from "~/utils/api"
 import MessageWindow from "./MessageWindow"
+import type { Message, Model, Usage } from "~/types/appstate"
 
 export const ChatFeatureBody = () => {
   return (
@@ -19,6 +20,41 @@ const LanguageButton = () => {
       <LanguageIcon className="h-6 w-6" />
     </button>
   )
+}
+const calculateCost = (usage: Usage, model: Model) => {
+  switch (model.id) {
+    case 'gpt-3.5-turbo':
+      if (model.usageCost)
+        return usage.total_tokens / 1000 * model?.usageCost
+      break
+    case 'gpt-3.5-turbo-0301':
+      if (model.usageCost)
+        return usage.total_tokens / 1000 * model?.usageCost
+      break
+    case 'gpt-4':
+      if (model.promptCost && model.completionCost)
+        return usage.prompt_tokens / 1000 * model?.promptCost + usage.completion_tokens / 1000 * model?.completionCost
+      break
+    case 'gpt-4-0314':
+      if (model.promptCost && model.completionCost)
+        return usage.prompt_tokens / 1000 * model?.promptCost + usage.completion_tokens / 1000 * model?.completionCost
+      break
+    case 'gpt-4-32k':
+      if (model.promptCost && model.completionCost)
+        return usage.prompt_tokens / 1000 * model?.promptCost + usage.completion_tokens / 1000 * model?.completionCost
+      break
+    case 'gpt-4-32k-0314':
+      if (model.promptCost && model.completionCost)
+        return usage.prompt_tokens / 1000 * model?.promptCost + usage.completion_tokens / 1000 * model?.completionCost
+      break
+  }
+  return 0
+}
+const increaseUsage = (usage: Usage, newUsage: Usage) => {
+  usage.prompt_tokens += newUsage.prompt_tokens
+  usage.completion_tokens += newUsage.completion_tokens
+  usage.total_tokens += newUsage.total_tokens
+  return usage
 }
 
 const ChatBar = () => {
@@ -38,18 +74,19 @@ const ChatBar = () => {
     }
   }, [width])
   const [showMenu, setShowMenu] = useState<boolean>(false)
-
-  const messages = useStore((state) => state.messages)
-  const setMessages = useStore((state) => state.setMessages)
-  const { id: model } = useStore((state) => state.model)
-  const apiKey = useStore((state) => state.apiKey)
+  const thread = useStore((state) => state.thread)
+  const setThread = useStore((state) => state.setThread)
+  const setProfile = useStore((state) => state.setProfile)
+  const profile = useStore((state) => state.profile)
   const { mutate, isLoading } = api.gpt.post.useMutation()
   const [message, setMessage] = useState<string>("")
   const sendMessage = () => {
     if (message.length > 0) {
-      mutate({ model, apiKey, messages: [...messages, { content: message, role: "user" }] }, {
+      mutate({ model: thread.model.id, apiKey: profile.key, messages: [...thread.messages, { content: message, role: "user" }] }, {
         onSuccess: (data) => {
-          setMessages([...messages, { content: message, role: "user" }, data.choices[0].message])
+          const cost = calculateCost(data.usage, thread.model)
+          setThread({ ...thread, cost: thread.cost + cost, messages: [...thread.messages, { content: message, role: "user" }, data.choices[0].message] as Message[] })
+          setProfile({ ...profile, cost: profile.cost + cost, usage: increaseUsage(profile.usage, data.usage) })
           setMessage("")
         },
         onError: (e) => {
@@ -184,7 +221,7 @@ const Logo = () => {
   )
 }
 const ProductSplash = () => {
-  const apiKey = useStore(state => state.apiKey)
+  const { key } = useStore(state => state.profile)
   return (
     <div>
       {/* Logo  */}
@@ -198,7 +235,7 @@ const ProductSplash = () => {
       {/* Premium Features Button */}
       {/* <PremiumFeaturesButton /> */}
       {/* API Key Input */}
-      {apiKey === "" && <GetStartedAPIKeyButton />}
+      {key === "" && <GetStartedAPIKeyButton />}
     </div>
   )
 }
@@ -255,7 +292,7 @@ const FeatureButton = (props: { featureName: string, icon: React.FunctionCompone
   )
 }
 const ChangeModelButton = () => {
-  const model = useStore(state => state.model)
+  const { model } = useStore(state => state.thread)
   const setModelModal = useStore(state => state.setModelModal)
 
   // Open modal to change model

@@ -1,30 +1,29 @@
 import { Dialog, Listbox, Transition } from '@headlessui/react'
 import { CheckIcon, ChevronUpDownIcon } from '@heroicons/react/24/solid'
 import { Fragment, useState } from 'react'
-import useStore, { type Model } from '~/store/store'
+import useStore from '~/store/store'
+import type { Model, Thread } from '~/types/appstate'
 function classNames(...classes: string[]) {
   return classes.filter(Boolean).join(' ')
 }
 const ChangeModelModal = () => {
-  const model = useStore((state) => state.model)
-  const setModel = useStore((state) => state.setModel)
+  const thread = useStore((state) => state.thread)
+  const setThread = useStore((state) => state.setThread)
   const modelModal = useStore((state) => state.modelModal)
   const setModelModal = useStore((state) => state.setModelModal)
-  const models = useStore((state) => state.models)
-  const [selectedModel, setSelectedModel] = useState<Model>(model)
 
-  const initialSystemInstruction = useStore((state) => state.initialSystemInstruction)
-  const setInitialSystemInstruction = useStore((state) => state.setInitialSystemInstruction)
-  const [systemInstruction, setSystemInstruction] = useState<string>(initialSystemInstruction)
+  const models = useStore((state) => state.models)
+  const [selectedModel, setSelectedModel] = useState<Model>(thread.model)
+
+  const [systemInstruction, setSystemInstruction] = useState<string>(thread.initialSystemInstruction)
   const confirmationHandler = () => {
-    setModel(selectedModel)
-    setInitialSystemInstruction(systemInstruction)
+    setThread(({ ...thread, model: selectedModel, initialSystemInstruction: systemInstruction }) as Thread)
     setModelModal(false)
   }
   const cancelHandler = () => {
     setModelModal(false)
-    setSelectedModel(model)
-    setSystemInstruction(initialSystemInstruction)
+    setSelectedModel(thread.model)
+    setSystemInstruction(thread.initialSystemInstruction)
   }
   return (
     <Transition.Root show={modelModal} as={Fragment}>

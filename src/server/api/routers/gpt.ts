@@ -7,7 +7,8 @@ import {
   publicProcedure,
   protectedProcedure,
 } from "~/server/api/trpc";
-import { type Message } from "~/store/store";
+import type { Message } from "~/types/appstate";
+
 export type ChatResponse = {
   id: string;
   created: number;
