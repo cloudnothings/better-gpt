@@ -3,7 +3,7 @@ import { CheckIcon, } from '@heroicons/react/24/solid'
 import { Fragment, useState } from 'react'
 
 import useStore from '~/store/store'
-import { Usage } from '~/types/appstate'
+import type { Usage } from '~/types/appstate'
 import { api } from '~/utils/api'
 // generate uuid
 export const uuid = () => {
