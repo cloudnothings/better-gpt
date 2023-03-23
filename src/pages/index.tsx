@@ -5,7 +5,8 @@ import { useEffect, useState } from "react";
 import MainWindow from "~/components/ChatWindow/ChatWindow";
 import ApiKeyModal from "~/components/modals/ApiKeyModal";
 import ChangeModelModal from "~/components/modals/ChangeModelModal";
-import useStore, { getProfile, loadData } from "~/store/store";
+import useStore, { getProfile, getThread, loadData } from "~/store/store";
+import type { Thread } from "~/types/appstate";
 
 const Home: NextPage = () => {
   const setProfile = useStore((state) => state.setProfile);
@@ -36,10 +37,16 @@ const Home: NextPage = () => {
     if (selectedProfile) {
       const profile = getProfile(selectedProfile)
       if (profile) {
-        useStore.setState({ profile })
+        setProfile(profile)
+        if (profile.threadIds) {
+          const threads = profile.threadIds.map((id) => {
+            return getThread(id)
+          }) as Thread[]
+          setThreads(threads)
+        }
       }
     }
-  }, [selectedProfile]);
+  }, [selectedProfile, setProfile, setThreads]);
   return (
     <>
       <Head>
@@ -65,46 +72,29 @@ const Home: NextPage = () => {
   );
 };
 const Navbar = () => {
-  const [search, setSearch] = useState("");
-  const chats = [
-    {
-      title: "Example Chat",
-      message: "This is an example chat",
-      id: 1,
-      selected: true,
-      starred: false
-    },
-    {
-      title: "Another Example",
-      message: "This is another example chat",
-      id: 2,
-      selected: false,
-      starred: true
-    },
-    {
-      title: "Example Chat",
-      message: "This is an example chat",
-      id: 3,
-      selected: false,
-      starred: false
-    }
-  ]
+  const resetThread = useStore((state) => state.resetThread);
+  const newChatHandler = () => {
+    resetThread()
+  }
   return (
     <div className="flex min-h-0 flex-1 flex-col bg-gray-800">
       <div className="flex flex-1 flex-col overflow-y-auto pb-4">
         <div className="flex-1 space-y-2 bg-gray-800 flex flex-col">
           <div className="px-2 space-y-2 sticky z-30 top-0 bg-gray-800 py-2">
             <div className="flex items-center justify-center space-x-2">
-              <button className="bg-gray-600 text-white group flex items-center justify-center rounded-md px-2 py-2 text-sm font-medium w-full hover:bg-gray-500 transition-all">
+              <button className="bg-gray-600 text-white group flex items-center justify-center rounded-md px-2 py-2 text-sm font-medium w-full hover:bg-gray-500 transition-all"
+                onClick={newChatHandler}
+              >
                 <PlusCircleIcon className="text-gray-300 mr-2 h-6 w-6 flex-shrink-0" />
                 New Chat
               </button>
-              <button className="bg-gray-600 text-white group flex items-center justify-center rounded-md px-2 py-2 text-sm font-medium hover:bg-gray-500 transition-all w-12 shrink-0">
-                <Cog8ToothIcon className="text-gray-300 h-6 w-6 flex-shrink-0"
-                />
+              <button className="bg-gray-600 text-white group flex items-center justify-center rounded-md px-2 py-2 text-sm font-medium hover:bg-gray-500 transition-all w-12 shrink-0"
+              >
+                <Cog8ToothIcon className="text-gray-300 h-6 w-6 flex-shrink-0" />
               </button>
             </div>
-            <div className="relative flex items-center space-x-2">
+            {/* Search for chats */}
+            {/* <div className="relative flex items-center space-x-2">
               <div className="relative w-full">
                 <input type="text" placeholder="Search chats..." className="bg-gray-700 text-white px-2 py-1 rounded-md w-full"
                   value={search}
@@ -113,11 +103,11 @@ const Navbar = () => {
               </div>
               <button className="text-gray-500 hover:text-white transiton-all flex items-center justify-center w-12 shrink-0"><svg stroke="currentColor" fill="currentColor" stroke-width="0" viewBox="0 0 512 512" className="w-6 h-6" height="1em" width="1em" xmlns="http://www.w3.org/2000/svg"><path d="M464,128H272L208,64H48A48,48,0,0,0,0,112V400a48,48,0,0,0,48,48H464a48,48,0,0,0,48-48V176A48,48,0,0,0,464,128ZM359.5,296a16,16,0,0,1-16,16h-64v64a16,16,0,0,1-16,16h-16a16,16,0,0,1-16-16V312h-64a16,16,0,0,1-16-16V280a16,16,0,0,1,16-16h64V200a16,16,0,0,1,16-16h16a16,16,0,0,1,16,16v64h64a16,16,0,0,1,16,16Z"></path></svg>
               </button>
-            </div>
-            <StarredChats chats={chats} />
+            </div> */}
+            <StarredChats />
           </div>
-          <CreateFolderForm />
-          <ExampleChats chats={chats} />
+          {/* <CreateFolderForm /> */}
+          <ThreadList />
           {/* Implement Drag n Drop for Chats */}
         </div>
       </div>
@@ -130,15 +120,15 @@ const LicenseCluster = () => {
   return (
     <div className="flex items-center justify-center">
       <div className="mb-2 grid grid-cols-2 gap-2">
-        <div className=" text-xs text-white font-semibold flex items-center justify-end">
+        {/* <div className=" text-xs text-white font-semibold flex items-center justify-end">
           License Key
         </div>
         <div>
           <button className="bg-gray-600 text-white group flex items-center justify-center rounded-md px-2 py-1 text-xs font-medium w-full hover:bg-gray-500 transition-all">
-            <svg stroke="currentColor" fill="currentColor" strokeWidth="0" viewBox="0 0 1024 1024" className="text-yellow-500 mr-2 h-4 w-4 flex-shrink-0" aria-hidden="true" height="1em" width="1em" xmlns="http://www.w3.org/2000/svg"><path d="M955.7 856l-416-720c-6.2-10.7-16.9-16-27.7-16s-21.6 5.3-27.7 16l-416 720C56 877.4 71.4 904 96 904h832c24.6 0 40-26.6 27.7-48zM480 416c0-4.4 3.6-8 8-8h48c4.4 0 8 3.6 8 8v184c0 4.4-3.6 8-8 8h-48c-4.4 0-8-3.6-8-8V416zm32 352a48.01 48.01 0 0 1 0-96 48.01 48.01 0 0 1 0 96z"></path></svg>
+            <ExclamationTriangleIcon className="text-yellow-500 mr-2 h-4 w-4 flex-shrink-0" />
             Unlicensed
           </button>
-        </div>
+        </div> */}
         <div className="text-xs text-white font-semibold flex items-center justify-end">
           OpenAI API Key
         </div>
@@ -149,10 +139,10 @@ const LicenseCluster = () => {
             >
               {profile.key
                 ? (<>
-                  <CheckIcon className="h-4 w-4 mr-2 text-green-500" />
+                  <CheckIcon className="mr-2 h-4 w-4 flex-shrink-0 text-green-500" />
                   <span>
-                    {/* show (***fdkl) using last 4 characters of the key*/
-                      `${profile.cost}`
+                    { // parse as dollars, show hundredth thousandths
+                      `$${(profile.cost / 1000).toFixed(5)}`
                     }
                   </span>
                 </>)
@@ -246,25 +236,27 @@ const Sidebar = () => {
     </div>
   )
 }
-const StarredChats = (props: { chats: Chat[] }) => {
+const StarredChats = () => {
+  const threads = useStore((state) => state.threads)
+  const selectedThread = useStore((state) => state.thread)
   return (
     <>
       <div className="max-h-[200px] overflow-auto">
-        {props.chats.map((chat) => (
-          <StarredChat key={chat.id} id={chat.id} title={chat.title} message={chat.message} selected={chat.selected} starred={chat.starred} />
+        {threads.map((thread) => (
+          <StarredChat  {...thread} key={thread.id} selected={selectedThread.id === thread.id} />
         ))}
       </div>
-      {props.chats.length > 0 && (<hr className="border-gray-700"></hr>)}
+      {threads.length > 0 && (<hr className="border-gray-700"></hr>)}
     </ >
   )
 }
 
-const SidebarChatButton = (props: Chat) => {
+const SidebarChatButton = (props: Thread & { selectedId?: string }) => {
 
   return (
     <div role="button">
       <div className="select-none lg:select-auto touch-manipulation">
-        <div className={classNames(props.selected ? "bg-gray-900" : "hover:bg-gray-700 hover:text-white", " text-white group flex items-center text-sm font-medium w-full space-x-2 justify-between overflow-hidden")}>
+        <div className={classNames(props?.selectedId === props.id ? "bg-gray-900" : "hover:bg-gray-700 hover:text-white", " text-white group flex items-center text-sm font-medium w-full space-x-2 justify-between overflow-hidden")}>
           <div className="flex items-center justify-start gap-x-2 min-w-0 w-full px-2 py-2 text-sm group cursor-pointer">
             <svg stroke="currentColor" fill="currentColor" stroke-width="0" viewBox="0 0 20 20" aria-hidden="true" className="text-gray-300 h-6 w-6 flex-shrink-0 hidden sm:block sm:group-hover:hidden" height="1em" width="1em" xmlns="http://www.w3.org/2000/svg"><path fill-rule="evenodd" d="M18 10c0 3.866-3.582 7-8 7a8.841 8.841 0 01-4.083-.98L2 17l1.338-3.123C2.493 12.767 2 11.434 2 10c0-3.866 3.582-7 8-7s8 3.134 8 7zM7 9H5v2h2V9zm8 0h-2v2h2V9zM9 9h2v2H9V9z" clip-rule="evenodd"></path></svg>
             <button className="flex-shrink-0  sm:hidden sm:group-hover:block">
@@ -275,17 +267,17 @@ const SidebarChatButton = (props: Chat) => {
                 {props.title}
               </div>
               <div className="text-xs text-gray-400 font-normal truncate w-full">
-                {props.message}
+                {props.messages[props.messages.length - 1]?.content}
               </div>
             </div>
           </div>
           <div className="pr-2">
             <div className="flex items-center justify-center space-x-2">
               <button className="text-gray-500 hover:text-white transiton-all">
-                <svg stroke="currentColor" fill="currentColor" stroke-width="0" viewBox="0 0 1024 1024" className="w-6 h-6 sm:w-4 sm:h-4" height="1em" width="1em" xmlns="http://www.w3.org/2000/svg"><path d="M880 836H144c-17.7 0-32 14.3-32 32v36c0 4.4 3.6 8 8 8h784c4.4 0 8-3.6 8-8v-36c0-17.7-14.3-32-32-32zm-622.3-84c2 0 4-.2 6-.5L431.9 722c2-.4 3.9-1.3 5.3-2.8l423.9-423.9a9.96 9.96 0 0 0 0-14.1L694.9 114.9c-1.9-1.9-4.4-2.9-7.1-2.9s-5.2 1-7.1 2.9L256.8 538.8c-1.5 1.5-2.4 3.3-2.8 5.3l-29.5 168.2a33.5 33.5 0 0 0 9.4 29.8c6.6 6.4 14.9 9.9 23.8 9.9z"></path></svg>
+                <PencilSquareIcon className="w-6 h-6 sm:w-4 sm:h-4" />
               </button>
               <button className="text-gray-500 hover:text-white transiton-all">
-                <svg stroke="currentColor" fill="currentColor" stroke-width="0" viewBox="0 0 1024 1024" className="w-6 h-6 sm:w-4 sm:h-4" height="1em" width="1em" xmlns="http://www.w3.org/2000/svg"><path d="M864 256H736v-80c0-35.3-28.7-64-64-64H352c-35.3 0-64 28.7-64 64v80H160c-17.7 0-32 14.3-32 32v32c0 4.4 3.6 8 8 8h60.4l24.7 523c1.6 34.1 29.8 61 63.9 61h454c34.2 0 62.3-26.8 63.9-61l24.7-523H888c4.4 0 8-3.6 8-8v-32c0-17.7-14.3-32-32-32zm-200 0H360v-72h304v72z"></path></svg>
+                <TrashIcon className="w-6 h-6 sm:w-4 sm:h-4" />
               </button>
             </div>
           </div>
@@ -294,13 +286,14 @@ const SidebarChatButton = (props: Chat) => {
     </div>
   )
 }
-const ExampleChats = (props: { chats: Chat[] }) => {
-
+const ThreadList = () => {
+  const threads = useStore((state) => state.threads)
+  const [selectedThread, setSelectedThread] = useState<Thread | null>(null)
   return (
     <div className="flex-1 pb-4">
-      {props.chats.map((chat) => {
+      {threads.map((thread) => {
         return (
-          <SidebarChatButton  {...chat} key={chat.id} />
+          <SidebarChatButton  {...thread} key={thread.id} selectedId={selectedThread?.id} />
         )
       })}
     </div>
@@ -337,14 +330,8 @@ const CreateFolderForm = () => {
     </div>
   )
 }
-interface Chat {
-  id: number;
-  title: string;
-  message: string;
-  starred: boolean;
-  selected: boolean;
-}
-const StarredChat = (props: Chat) => {
+
+const StarredChat = (props: Thread & { selected: boolean }) => {
   return (
     <div className={classNames(props.selected ? "bg-gray-900 text-white" : "text-gray-300 hover:bg-gray-700 hover:text-white", " group flex items-center text-sm font-medium w-full space-x-2 justify-between overflow-hidden")}>
       <div className="flex items-center justify-start gap-x-2 min-w-0 w-full px-2 py-2 text-sm group cursor-pointer">

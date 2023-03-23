@@ -1,6 +1,6 @@
 import { Dialog, Listbox, Transition } from '@headlessui/react'
 import { CheckIcon, ChevronUpDownIcon } from '@heroicons/react/24/solid'
-import { Fragment, useState } from 'react'
+import { Fragment, useEffect, useState } from 'react'
 import useStore from '~/store/store'
 import type { Model, Thread } from '~/types/appstate'
 function classNames(...classes: string[]) {
@@ -14,7 +14,9 @@ const ChangeModelModal = () => {
 
   const models = useStore((state) => state.models)
   const [selectedModel, setSelectedModel] = useState<Model>(thread.model)
-
+  useEffect(() => {
+    setSelectedModel(thread.model)
+  }, [thread.model])
   const [systemInstruction, setSystemInstruction] = useState<string>(thread.initialSystemInstruction)
   const confirmationHandler = () => {
     setThread(({ ...thread, model: selectedModel, initialSystemInstruction: systemInstruction }) as Thread)

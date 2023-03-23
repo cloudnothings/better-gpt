@@ -66,6 +66,20 @@ const models = [
   },
 ] as Model[];
 
+const initialThread = {
+  id: "",
+  name: "",
+  profileId: "",
+  budget: 0,
+  cost: 0,
+  description: "",
+  initialSystemInstruction: "",
+  messages: [],
+  model: models[0] as Model,
+  starred: false,
+  title: "",
+} as Thread;
+
 export const initialValues = {
   profile: {
     id: "",
@@ -84,19 +98,7 @@ export const initialValues = {
   } as Profile,
   profiles: [] as Profile[],
   selectedProfile: "",
-  thread: {
-    id: "",
-    name: "",
-    profileId: "",
-    budget: 0,
-    cost: 0,
-    description: "",
-    initialSystemInstruction: "",
-    messages: [],
-    model: models[0] as Model,
-    starred: false,
-    title: "",
-  } as Thread,
+  thread: initialThread,
   threads: [] as Thread[],
   selectedApiKey: 0,
   apiKeyModal: false,
@@ -154,7 +156,7 @@ const loadProfiles = () => {
   }
   return { profiles, profile, selectedProfile };
 };
-const getThread = (id: string) => {
+export const getThread = (id: string) => {
   const raw = localStorage.getItem("Thread_" + id);
   if (raw) {
     return JSON.parse(raw) as Thread;
@@ -200,6 +202,7 @@ interface Store {
   width: number;
   setWidth: (value: number) => void;
   resetValues: () => void;
+  resetThread: () => void;
   load: () => void;
 }
 
@@ -296,6 +299,7 @@ const useStore = create<Store>((set) => ({
   setWidth: (value: number) => set({ width: value }),
   setSelectedApiKey: (value: number) => set({ selectedApiKey: value }),
   load: () => set({ ...initialValues, ...loadData() }),
+  resetThread: () => set({ thread: initialValues.thread }),
   resetValues: () => set(initialValues),
 }));
 

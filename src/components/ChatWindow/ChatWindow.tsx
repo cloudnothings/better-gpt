@@ -292,13 +292,13 @@ const FeatureButton = (props: { featureName: string, icon: React.FunctionCompone
   )
 }
 const ChangeModelButton = () => {
-  const { model } = useStore(state => state.thread)
+  const thread = useStore(state => state.thread)
   const setModelModal = useStore(state => state.setModelModal)
 
   // Open modal to change model
 
   return (
-    <FeatureButton featureName={`Model: ${model.name}`} icon={Cog6ToothIcon} color="bg-gradient-to-r from-green-500 to-cyan-500 active:bg-cyan-600" onClick={() => setModelModal(true)} />
+    <FeatureButton featureName={`Model: ${thread.model.name}`} icon={Cog6ToothIcon} color="bg-gradient-to-r from-green-500 to-cyan-500 active:bg-cyan-600" onClick={() => setModelModal(true)} />
   )
 }
 const SelectCharacterButton = () => {
